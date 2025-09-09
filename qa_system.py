@@ -4,7 +4,7 @@ from langchain_community.llm import HuggingFaceHub
 from langchain_openai import ChatOpenAI
 
 from config import settings
-from vectore_store import get_vector_store
+from vector_store import get_vector_store
 
 
 def init_qa(use_advanced_llm: bool = True, model_name="gpt-5"):

@@ -1,6 +1,6 @@
-from langchain.chain import RetrievalQA
+from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from langchain_community.llm import HuggingFaceHub
+from langchain_community.llms import HuggingFaceHub
 from langchain_openai import ChatOpenAI
 
 from config import settings

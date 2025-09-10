@@ -4,12 +4,13 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    open_api_key: str = os.getenv("open_api_key", "")
-    open_base_url: str = os.getenv("open_base_url", "")
-    chroma_db_path: str = os.getenv("chroma_db_path", "")
+    openai_api_key: str
+    openai_base_url: str | None = None
+    chroma_db_path: str = "./chroma_db"
 
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 settings = Settings()

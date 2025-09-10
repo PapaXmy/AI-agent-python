@@ -58,18 +58,16 @@ def load_documents(path: str):
                 "format": ext[1:],
             }
 
-            meta_json = file.with_suffix(file.suffix + ".meta.json")
-            meta_yaml = file.with_suffix(file.suffix + ".meta.yaml")
+            custom_metadata = {}
+            for meta_ext in [".meta.json", ".meta.yaml", "meta.yml"]:
+                meta_path = file.with_suffix(file.suffix + meta_ext)
+                if meta_path.exists():
+                    custom_metadata = _load_metadata(meta_path)
+                    break
 
-            custom_matadata = {}
-            if meta_json.exists():
-                custom_metadata = _load_metadata(meta_json)
-            elif meta_yaml.exists():
-                custom_matadata = _load_metadata(meta_yaml)
-
-            for d in loaded_docs:
-                d.matadata.update(base_metadata)
-                d.metadata.update(custom_matadata)
+            for doc in loaded_docs:
+                doc.matadata.update(base_metadata)
+                doc.metadata.update(custom_metadata)
 
             docs.extend(loaded_docs)
 

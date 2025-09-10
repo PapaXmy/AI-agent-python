@@ -4,14 +4,11 @@ from langchain_openai import OpenAIEmbeddings
 from config import settings
 
 
-def get_embeddings(provider: str = "openai"):
-    if provider == "openai":
+def get_embeddings(use_openai: bool = True, model_name: str = "all-MiniLM-L6-v2"):
+    """Возвращает объект эмбеддингов"""
+    if use_openai:
         return OpenAIEmbeddings(
             open_api_key=settings.open_api_key, open_api_base=settings.open_base_url
         )
-    elif provider == "huggingface":
-        return HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
     else:
-        raise ValueError("Unknow embeddings provider")
+        return HuggingFaceEmbeddings(model_name=model_name)

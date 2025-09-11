@@ -7,18 +7,13 @@ from config import settings
 from vector_store import get_vector_store
 
 
-def init_qa(use_advanced_llm: bool = True, model_name="gpt-5"):
-    vectordb = get_vector_store()
-    retriever = vectordb.as_retriever()
+def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
+    retriever = vector_db.as_retriever()
 
     if use_advanced_llm:
-        llm = ChatOpenAI(
-            model=model_name,
-            temperature=0.1,
-            max_tokens=2000,
-            open_api_key=settings.open_api_key,
-            open_api_base=settings.open_base_url,
-        )
+        if not settings.openai_api_key:
+            raise ValueError("Не найден OpenAI API ключ, проверте ваш .env файл")
+
     else:
         llm = HuggingFaceHub(
             repo_id="google/flan-t5-large",

@@ -1,8 +1,9 @@
 import argparse
+import os
 
 from config import settings
 from embeddings import get_embeddings
-from interface_gradio import chat
+from interface_gradio import launch_interface
 from loaders import load_documents
 from qa_system import init_qa
 from vector_store import get_vector_store
@@ -16,6 +17,13 @@ def main():
     parser.add_argument("--project", type=str, help="Название проекта")
     parser.add_argument("--ui", action="store_true", help="Запустить Gradio UI")
     args = parser.parse_args()
+
+    if not settings.openai_api_key:
+        print("Ошибка: OpenAI API ключ не найден!")
+        print(
+            "Добавте OPENAI_API_KEY в файл .env или установите как переменную окружения"
+        )
+        return
 
     if not args.add_docs:
         print("Укажите путь к документам через --add-docs ./docs")

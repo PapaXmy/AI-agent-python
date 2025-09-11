@@ -14,6 +14,17 @@ def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
         if not settings.openai_api_key:
             raise ValueError("Не найден OpenAI API ключ, проверте ваш .env файл")
 
+        openai_kwargs = {
+            "model": model_name,
+            "temperature": 0.1,
+            "max_token": 2000,
+            "openai_api_key": settings.openai_api_key,
+        }
+
+        if settings.openai_base_url:
+            openai_kwargs["openai_base_url"] = settings.openai_base_url
+
+        llm = ChatOpenAI(**openai_kwargs)
     else:
         llm = HuggingFaceHub(
             repo_id="google/flan-t5-large",
@@ -32,7 +43,7 @@ def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
     Ответ:"""
 
     prompt = PromptTemplate(
-        template=prompt_template, input_variables=["contex", "question"]
+        template=prompt_template, input_variables=["context", "question"]
     )
 
     return RetrievalQA.from_chain_type(

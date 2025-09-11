@@ -41,3 +41,24 @@ def add_documents_to_store(
     vectordb.add_documents(docs)
     vectordb.persist()
     return vectordb
+
+
+def list_project():
+    """Возвращает список всех проектов базе данных"""
+    projects = []
+    if os.path.exists(settings.chroma_db_path):
+        for item in os.listdir(settings.chroma_db_path):
+            if os.path.isdir(os.path.join(settings.chroma_db_path, item)):
+                projects.append(item)
+    return projects
+
+
+def delete_project(project_name: str):
+    """Удаляет проект и все его данные"""
+    project_path = os.path.join(settings.chroma_db_path, project_name)
+    if os.path.exists(project_path):
+        import shutil
+
+        shutil.rmtree(project_path)
+        return True
+    return False

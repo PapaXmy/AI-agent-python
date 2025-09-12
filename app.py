@@ -3,10 +3,10 @@ import os
 
 from config import settings
 from embeddings import get_embeddings
-from interface_gradio import launch_interface
+from interface_gradio import launch_interface, project_selection_interface
 from loaders import load_documents
 from qa_system import init_qa
-from vector_store import get_vector_store
+from vector_store import delete_project, get_vector_store, list_project
 
 
 def main():
@@ -14,8 +14,21 @@ def main():
     parser.add_argument(
         "--add-docs", type=str, help="путь к папке с документацией или книгами"
     )
-    # parser.add_argument("--project", type=str, help="Название проекта")
+    parser.add_argument(
+        "--col",
+        type=str,
+        default="default",
+        help="Название коллекции (по умолчанию: default)",
+    )
     parser.add_argument("--ui", action="store_true", help="Запустить Gradio UI")
+    parser.add_argument(
+        "--list-col",
+        action="store_true",
+        help="Показать список всех коллекций в базе данных",
+    )
+    parser.add_argument(
+        "--delete-col", type=str, help="Удатить коллекцию и все ее данные"
+    )
     args = parser.parse_args()
 
     if not settings.openai_api_key:

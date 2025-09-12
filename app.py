@@ -94,7 +94,7 @@ def main():
         documents=documents if documents else None, project_name=args.col
     )
 
-    qa_chain = init_qa(vector_db, use_advanced_llm=True)
+    qa_chain = init_qa(vector_db)
 
     if args.ui:
         print(f"Запуск Gradio UI для коллекции '{args.col}'")

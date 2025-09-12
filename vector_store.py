@@ -8,13 +8,13 @@ from embeddings import get_embeddings
 
 def get_vector_store(
     documents=None,
-    provider: str = "openai",
+    provider: str = "local",
     project_name: str = "default",
     model_name: str = "BAAI/bge-large-en",
 ):
     """Создает или загружает векторное хранилище"""
     use_openai = provider == "openai"
-    embeddings_functions = get_embeddings(use_openai=use_openai, model_name=model_name)
+    embedding_function = get_embeddings(use_openai=use_openai, model_name=model_name)
     project_path = os.path.join(settings.chroma_db_path, project_name)
     os.makedirs(project_path, exist_ok=True)
     collection_name = f"{project_name}"
@@ -22,14 +22,14 @@ def get_vector_store(
     if documents:
         vectordb = Chroma.from_documents(
             documents=documents,
-            embedding=embeddings_functions,
+            embedding=embedding_function,
             persist_directory=settings.chroma_db_path,
             collection_name=collection_name,
         )
     else:
         vectordb = Chroma(
             persist_directory=settings.chroma_db_path,
-            embeddings_functions=embeddings_functions,
+            embedding_function=embedding_function,
             collection_name=collection_name,
         )
 

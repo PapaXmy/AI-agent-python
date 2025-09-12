@@ -7,7 +7,7 @@ from config import settings
 from vector_store import get_vector_store
 
 
-def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
+def init_qa(vector_db, use_advanced_llm: bool = False, model_name="gpt-4o"):
     retriever = vector_db.as_retriever()
 
     if use_advanced_llm:
@@ -17,7 +17,7 @@ def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
         openai_kwargs = {
             "model": model_name,
             "temperature": 0.1,
-            "max_token": 2000,
+            "max_tokens": 2000,
             "openai_api_key": settings.openai_api_key,
         }
 

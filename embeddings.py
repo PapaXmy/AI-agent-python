@@ -16,11 +16,11 @@ class BgeEmbeddings(HuggingFaceEmbeddings):
         instruction = "Represent this sentence for searching relevant passeges:"
         return super().embed_query(f"{instruction} {text}")
 
-    def enbed_documents(self, texts: List(str)):
+    def embed_documents(self, texts: List[str]):
         return super().embed_documents(texts)
 
 
-def get_embeddings(use_openai: bool = True, model_name: str = "BAAI/bge-large-en"):
+def get_embeddings(use_openai: bool = False, model_name: str = "BAAI/bge-large-en"):
     """Инициализация эмбеддингов для Chroma"""
     if use_openai:
         if not settings.openai_api_key:
@@ -40,7 +40,7 @@ def get_embeddings(use_openai: bool = True, model_name: str = "BAAI/bge-large-en
             embeddings = BgeEmbeddings(
                 model_name=model_name,
                 model_kwargs={"device": "cpu"},
-                encode_kwargs={"normalize_embeddings: True"},
+                encode_kwargs={"normalize_embeddings": True},
             )
         else:
             embeddings = HuggingFaceEmbeddings(model_name=model_name)

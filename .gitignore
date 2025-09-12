@@ -1,6 +1,7 @@
-venv/
+venv
 .env
 .mypy_cashe
 chroma_db/
 __pycache__
 docs/
+.gradio

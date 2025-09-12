@@ -11,7 +11,7 @@ def get_vector_store(
 ):
     """Создает или загружает векторное хранилище"""
     use_openai = provider == "openai"
-    embeddings = get_embeddings(use_openai=use_openai)
+    embeddings_functions = get_embeddings(use_openai=use_openai)
     project_path = os.path.join(settings.chroma_db_path, project_name)
     os.makedirs(project_path, exist_ok=True)
     collection_name = f"{project_name}"
@@ -19,14 +19,14 @@ def get_vector_store(
     if documents:
         vectordb = Chroma.from_documents(
             documents=documents,
-            embeddings=embeddings,
+            embedding=embeddings_functions,
             persist_directory=settings.chroma_db_path,
             collection_name=collection_name,
         )
     else:
         vectordb = Chroma(
             persist_directory=settings.chroma_db_path,
-            embeddings_functions=embeddings,
+            embeddings_functions=embeddings_functions,
             collection_name=collection_name,
         )
 

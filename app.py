@@ -69,7 +69,7 @@ def main():
 
     documents = []
     if args.add_docs:
-        print("Загружаем документы!")
+        print(f"Загружаем документы в коллекцию '{args.col}'")
         documents = load_documents(args.add_docs)
 
         if not documents:
@@ -90,16 +90,20 @@ def main():
             if meta_preview:
                 print(f" Кастомные метаданные: {meta_preview}")
 
-    vector_db = get_vector_store(documents=documents if documents else None)
+    vector_db = get_vector_store(
+        documents=documents if documents else None, project_name=args.col
+    )
 
     qa_chain = init_qa(vector_db, use_advanced_llm=True)
 
     if args.ui:
-        print("Запуск Gradio UI...")
-        launch_interface(qa_chain)
+        print(f"Запуск Gradio UI для коллекции '{args.col}'")
+        launch_interface(qa_chain, args.col)
     else:
-        print("Документы успешно добавлены в векторную базу.")
-        print("Для запуска интерфейса используйте: python app.py --ui")
+        print(f"Документы успешно добавлены в коллекцию {args.col}")
+        print(
+            f"Для запуска интерфейса используйте: python app.py --ui --col {args.col}"
+        )
 
 
 if __name__ == "__main__":

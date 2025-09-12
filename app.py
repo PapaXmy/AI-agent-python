@@ -38,10 +38,33 @@ def main():
         )
         return
 
+    if args.list_col:
+        projects = list_project()
+
+        if not projects:
+            print("Нет созданных коллекций!")
+        else:
+            print("Доступные проекты:")
+            for project in projects:
+                print(f" - {project}")
+        return
+
+    if args.delete_col:
+
+        if delete_project(args.delete_col):
+            print(f'Коллекция "{args.delete_col}" успешно удалена')
+        else:
+            print(f'Коллекция "{args.delete_col}" не найдена')
+        return
+
     if not args.add_docs and not args.ui:
         print("Использование:")
-        print(" для добавления документов: python app.py --add-docs ./docs")
-        print(" Для запуска интерфейса: python app.py --ui")
+        print(
+            " для добавления документов: python app.py --add-docs ./docs --col <my collection>"
+        )
+        print(" Для запуска интерфейса: python app.py --ui --col <my collection>")
+        print(" Для показа списка коллекций: python app.py --list-col")
+        print(" Для удаления коллекции: python app.py --delete_col <my collection>")
         return
 
     documents = []

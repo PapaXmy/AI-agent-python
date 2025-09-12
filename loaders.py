@@ -66,7 +66,7 @@ def load_documents(path: str):
                     break
 
             for doc in loaded_docs:
-                doc.matadata.update(base_metadata)
+                doc.metadata.update(base_metadata)
                 doc.metadata.update(custom_metadata)
 
             docs.extend(loaded_docs)

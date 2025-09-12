@@ -3,3 +3,4 @@ venv/
 .mypy_cashe
 chroma_db/
 __pycache__
+docs/

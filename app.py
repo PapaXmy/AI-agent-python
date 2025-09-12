@@ -1,8 +1,6 @@
 import argparse
-import os
 
 from config import settings
-from embeddings import get_embeddings
 from interface_gradio import launch_interface, project_selection_interface
 from loaders import load_documents
 from qa_system import init_qa

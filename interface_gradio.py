@@ -1,6 +1,5 @@
 import gradio as gr
 
-import vector_store
 from qa_system import init_qa
 from vector_store import get_vector_store, list_project
 

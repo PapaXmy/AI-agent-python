@@ -1,8 +1,5 @@
-# import os
-
 from typing import List
 
-# from langchain.embeddings import SentenceTransformerEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
 
@@ -31,8 +28,8 @@ def get_embeddings(use_openai: bool = False, model_name: str = "BAAI/bge-large-e
             "openai_api_key": settings.openai_api_key,
         }
 
-        if settings.openai_base_url:
-            openai_kwargs["openai_base_url"] = settings.openai_base_url
+        if settings.openai_api_base:
+            openai_kwargs["openai_api_base"] = settings.openai_api_base
 
         embeddings = OpenAIEmbeddings(**openai_kwargs)
     else:

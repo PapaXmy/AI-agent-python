@@ -1,4 +1,3 @@
-# import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
@@ -6,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     openai_api_key: str = ""
-    openai_base_url: str = ""
+    openai_api_base: str = ""
     chroma_db_path: str = "./chroma_db"
 
     class Config:

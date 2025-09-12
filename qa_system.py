@@ -2,10 +2,8 @@ from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain_community.llms import HuggingFaceHub
 from langchain_openai import ChatOpenAI
-from openai import OpenAI
 
 from config import settings
-from vector_store import get_vector_store
 
 
 def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
@@ -20,40 +18,9 @@ def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
             temperature=0.1,
             max_tokens=2000,
             openai_api_key=settings.openai_api_key,
-            open_api_base=settings.openai_base_url,
+            openai_api_base=settings.openai_api_base,
         )
 
-        # client = OpenAI(
-        #     api_key=settings.openai_api_key, base_url=settings.openai_base_url
-        # )
-        #
-        # class CustomOpenAIWrapper:
-        #     def __init__(self, client, model_name):
-        #         self.client = client
-        #         self.model_name = model_name
-        #
-        #     def invoke(self, prompt):
-        #         response = self.client.chat.completions.create(
-        #             model=self.model_name,
-        #             messages=[{"role": "user", "content": prompt}],
-        #             temperature=0.1,
-        #             max_tokens=2000,
-        #         )
-        #         return response.choise[0].message.content
-        #
-        # llm = CustomOpenAIWrapper(client, model_name)
-
-        # openai_kwargs = {
-        #     "model": model_name,
-        #     "temperature": 0.1,
-        #     "max_tokens": 2000,
-        #     "openai_api_key": settings.openai_api_key,
-        # }
-        #
-        # if settings.openai_base_url:
-        #     openai_kwargs["openai_base_url"] = settings.openai_base_url
-        #
-        # llm = ChatOpenAI(**openai_kwargs)
     else:
         llm = HuggingFaceHub(
             repo_id="google/flan-t5-large",

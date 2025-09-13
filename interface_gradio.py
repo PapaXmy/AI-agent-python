@@ -7,7 +7,7 @@ from vector_store import get_vector_store, list_project
 def chat(query, qa_chain):
     """Функция для обработки запросов через Gradio интерфейс"""
     try:
-        result = qa_chain.run(query)
+        result = qa_chain.invoke({"query": query})
         return result
     except Exception as e:
         return f"Ошибка: {str(e)}"

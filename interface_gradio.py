@@ -41,7 +41,7 @@ def project_selection_interface():
     iface = gr.Interface(
         fn=load_project,
         inputs=gr.Dropdown(
-            choice=projects + ["Новая коллекция"], label="Выберете коллекцию"
+            choices=projects + ["Новая коллекция"], label="Выберете коллекцию"
         ),
         outputs="text",
         title="Выбор коллекции",

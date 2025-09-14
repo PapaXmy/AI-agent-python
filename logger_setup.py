@@ -33,3 +33,5 @@ def setup_logging():
     logging.getLogger("chromadb").setLevel(logging.WARNING)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("https").setLevel(logging.WARNING)
+
+    logging.info("Логирование успешно настроено!")

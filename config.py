@@ -1,6 +1,9 @@
+import logging
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
+
+logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
@@ -14,7 +17,12 @@ class Settings(BaseSettings):
         extra = "allow"
 
 
-Path("./chroma_db").mkdir(exist_ok=True)
+try:
+    Path("./chroma_db").mkdir(exist_ok=True)
+    logger.info("Директория для Chroms DB создана или уже существует")
+except Exception as e:
+    logger.error(f"Ошибка создания директории для Chroma DB: {e}")
 
 
 settings = Settings()
+logger.info("Настройки приложения загружены")

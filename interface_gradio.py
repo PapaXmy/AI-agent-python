@@ -11,10 +11,16 @@ logger = logging.getLogger(__name__)
 def chat(query, qa_chain):
     """Функция для обработки запросов через Gradio интерфейс"""
     logger.info(f"Получен запрос: {query}")
+
     try:
         result = qa_chain.invoke({"query": query})
-        logger.info(f"Ответ сгенерирован успешно, длина: {len(result)} символов")
-        return result
+
+        if isinstance(result, dict) and "result" in result:
+            answer = result["result"]
+        else:
+            answer = str(result)
+        logger.info(f"Ответ сгенерирован успешно, длина: {len(answer)} символов")
+        return answer
     except Exception as e:
         error_msg = f"Ошибка: {str(e)}"
         logger.error(f"Ошибка при обработке запроса: {error_msg}")

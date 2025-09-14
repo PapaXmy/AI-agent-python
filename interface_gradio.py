@@ -45,6 +45,7 @@ def project_selection_interface():
 
     def load_project(project_name):
         logger.info(f"Выбрана коллекция: {project_name}")
+
         if project_name and project_name != "Новая коллекция":
             try:
                 vector_db = get_vector_store(project_name=project_name)

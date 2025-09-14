@@ -10,9 +10,7 @@ def setup_logging():
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
 
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name) - %(levelname)s - %(messages)s"
-    )
+    formatter = logging.Formatter("{asctime} - {name} - {levelname} - {messages}")
 
     file_handler = RotatingFileHandler(
         os.path.join(log_dir, "ai_agent.log"), maxBytes=10 * 1024 * 1024, backupCount=5
@@ -26,6 +24,10 @@ def setup_logging():
 
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
+
+    for handler in root_logger.handlers[:]:
+        root_logger.removeHandler(handler)
+
     root_logger.addHandler(file_handler)
     root_logger.addHandler(console_handler)
 

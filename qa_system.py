@@ -10,7 +10,7 @@ from config import settings
 logger = logging.getLogger(__name__)
 
 
-def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
+def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-4o"):
     """Инициализация QA системы (вопрос/ответ LLM)"""
     logger.info("Инициализация QA системы")
     retriever = vector_db.as_retriever()
@@ -27,7 +27,7 @@ def init_qa(vector_db, use_advanced_llm: bool = True, model_name="gpt-5"):
         llm = ChatOpenAI(
             model=model_name,
             temperature=0.1,
-            max_tokens=2000,
+            # max_tokens=2000,
             openai_api_key=settings.openai_api_key,
             openai_api_base=settings.openai_api_base,
         )

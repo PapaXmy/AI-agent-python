@@ -106,6 +106,21 @@ def create_inteface():
 
             load_status = gr.Textbox(label="Статус", interactive=False)
             load_btn = gr.Button("Загрузить коллекцию")
+
+        with gr.Tab("Загрузка документов"):
+            with gr.Row():
+                new_project_name = gr.Textbox(
+                    label="Название коллекции",
+                    placeholder="Введите название новой коллекции",
+                )
+                file_output = gr.File(
+                    label="Загрузить файлы",
+                    file_count="multiple",
+                    file_types=[".txt", ".pdf", ".docx", ".doc", ".md", ".html", ".py"],
+                )
+
+            upload_status = gr.Textbox(label="Статус загрузки", interactive=False)
+            upload_btn = gr.Button("Загрузить и индексировать")
     return demo
 
 

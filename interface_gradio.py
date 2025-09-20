@@ -66,8 +66,18 @@ def upload_and_index_files(files, project_name, progress=gr.Progress()):
 
         progress(0.1, desc="Сохранение файлов...")
         for file in files:
-            with open(os.path.join(temp_dir, os.path.basename(file.name)), "wb") as f:
-                f.write(file.read())
+            try:
+                file_name = os.path.basename(file.name)
+                file_path = os.path.join(temp_dir, file_name)
+
+                shutil.copyfile(file.name, file_path)
+                logger.info(f"Файл {file_name} успешно скопирован")
+            except Exception as e:
+                logger.error(f"Ошибка при обработке файла {file.name}")
+                logger.error(f"Тип объекта: {type(file)}")
+                logger.error(f"Атрибуты объекта: {dir(file)}")
+                logger.exception("Полный текст ошибки")
+                continue
 
         progress(0.3, desc="Загрузка документов...")
         documents = load_documents(temp_dir)

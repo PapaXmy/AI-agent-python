@@ -121,6 +121,16 @@ def create_inteface():
 
             upload_status = gr.Textbox(label="Статус загрузки", interactive=False)
             upload_btn = gr.Button("Загрузить и индексировать")
+
+        with gr.Tab("Чат с документацией"):
+            chatbot = gr.Chatbot(label="Чат", height=500)
+            msg = gr.Textbox(
+                label="Ваш запрос", placeholder="Введите ваш запрос здесь...", lines=2
+            )
+            with gr.Row():
+                submit_btn = gr.Button("Отправить")
+                clear_btn = gr.Button("Очистить чат")
+
     return demo
 
 

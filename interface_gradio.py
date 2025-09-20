@@ -131,6 +131,19 @@ def create_inteface():
                 submit_btn = gr.Button("Отправить")
                 clear_btn = gr.Button("Очистить чат")
 
+        # обработчики для вкладки выбора коллекции
+        def refresh_progect():
+            projects = list_project()
+            return gr.Dropdown.update(choises=projects + ["Новая коллекция"])
+
+        refresh_btn.click(fn=refresh_progect, inputs=[], outputs=project_dropdown)
+
+        load_btn.click(
+            fn=load_selected_collection,
+            inputs=[project_dropdown],
+            outputs=[qa_chain_state, load_status],
+        )
+
     return demo
 
 

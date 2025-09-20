@@ -171,58 +171,7 @@ def create_inteface():
     return demo
 
 
-def launch_chat_interface(qa_chain, project_name):
+def launch_chat_interface():
     """Запуск Gradio интерфейса"""
-    logger.info(f"Запуск интерфейса для коллекции: {project_name}")
-
-    def predict(message, history):
-        return chat_with_history(message, history, qa_chain)
-
-    chat_interface = gr.ChatInterface(
-        fn=predict,
-        title=f"AI Python Agent - коллекция: {project_name}",
-        description="Задайте вопрос о вашей документации",
-        theme="soft",
-    )
-    logger.info("Интерфейс Gradio инициализирован!")
-
-    return chat_interface.launch(server_name="0.0.0.0", server_port=7860, share=True)
-
-
-def project_selection_interface():
-    """Интерфейс для выбора коллекции"""
-    logger.info("Запуск интерфейса выбора коллекции!")
-
-    projects = list_project()
-    logger.info(f"Доступные коллекции: {projects}")
-
-    def load_project(project_name):
-        logger.info(f"Выбрана коллекция: {project_name}")
-
-        if project_name and project_name != "Новая коллекция":
-            try:
-                vector_db = get_vector_store(project_name=project_name)
-                qa_chain = init_qa(vector_db)
-                logger.info("QA цепочка успешно инициализирована.")
-                return launch_chat_interface(qa_chain, project_name)
-            except Exception as e:
-                error_msg = f"Ошибка загрузки коллекции: {str(e)}"
-                logger.error(error_msg)
-                return error_msg
-        else:
-            msg = "Пожалуйста, выберите существующую коллекцию или создайте новую через командную строку"
-            logger.warning(msg)
-            return msg
-
-    iface = gr.Interface(
-        fn=load_project,
-        inputs=gr.Dropdown(
-            choices=projects + ["Новая коллекция"], label="Выберете коллекцию"
-        ),
-        outputs="text",
-        title="Выбор коллекции",
-        description="Выберете коллекцию для работы или создайте новую через командную строку",
-    )
-    logger.info("Интерфейс выбора коллекции инициализирован")
-
-    return iface.launch(server_name="0.0.0.0", server_port=7860, share=True)
+    demo = create_inteface()
+    demo.launch(server_name="0.0.0.0", server_port=7860, share=True)

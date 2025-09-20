@@ -151,6 +151,23 @@ def create_inteface():
             outputs=upload_status,
         )
 
+        # обработчик чата
+        def respond(message, chat_history, qa_chain):
+            if qa_chain is None:
+                chat_history.append(
+                    message, 'Сначала загрузите коллекцию из вкладки "выбор коллекции"'
+                )
+
+                return "", chat_history
+
+            answer = chat_with_history(message, chat_history, qa_chain)
+            chat_history.append(message, answer)
+            return "", chat_history
+
+        msg.submit(respond, [msg, chatbot, qa_chain_state], [msg, chatbot])
+
+        clear_btn.click(lambda: None, None, chatbot, queue=False)
+
     return demo
 
 

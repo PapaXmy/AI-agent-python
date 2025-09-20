@@ -144,6 +144,13 @@ def create_inteface():
             outputs=[qa_chain_state, load_status],
         )
 
+        # обработчик для вкладки загрузки документов
+        upload_btn.click(
+            fn=upload_and_index_files,
+            inputs=[file_output, new_project_name],
+            outputs=upload_status,
+        )
+
     return demo
 
 

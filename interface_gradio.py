@@ -87,7 +87,7 @@ def upload_and_index_files(files, project_name, progress=gr.Progress()):
         )
     except Exception as e:
         error_msg = f"Ошибка загрузки файлов: {str(e)}"
-        logger.error(error_msg)
+        logger.exception("Ошибка загрузки файлов")
         return error_msg
 
 

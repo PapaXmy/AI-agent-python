@@ -1,9 +1,12 @@
 import logging
+import os
+import shutil
 
 import gradio as gr
 
+from loaders import load_documents
 from qa_system import init_qa
-from vector_store import get_vector_store, list_project
+from vector_store import add_documents_to_store, get_vector_store, list_project
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +48,44 @@ def load_selected_collection(project_name, progress=gr.Progress()):
     except Exception as e:
         error_msg = f"Ошибка загрузки коллекции: {str(e)}"
         return None, error_msg
+
+
+def upload_and_index_files(files, project_name, progress=gr.Progress()):
+    """Загрузка и индексация файлов в коллекцию"""
+    if not files:
+        return "Пожалуйста, выберите файлы для загрузки"
+
+    if not project_name or project_name == "Новая коллекция":
+        return "Пожалуйста, укажите название для новой коллекции"
+
+    try:
+        temp_dir = f"./temp_uploads/{project_name}"
+        os.makedirs(temp_dir, exist_ok=True)
+
+        progress(0.1, desc="Сохранение файлов...")
+        for file in files:
+            with open(os.path.join(temp_dir, os.path.basename(file.name)), "wb") as f:
+                f.write(file.read())
+
+        progress(0.3, desc="Загрузка документов...")
+        documents = load_documents(temp_dir)
+
+        if not documents:
+            return "Не удалось загрузить документы из выбранных файлов"
+
+        progress(0.7, desc="Индексация документов...")
+        add_documents_to_store(documents, project_name=project_name)
+
+        shutil.rmtree(temp_dir)
+
+        progress(1.0, desc="Готово!")
+
+        return (
+            f"Успешно добавлено {len(documents)} документов в коллекцию {project_name}"
+        )
+    except Exception as e:
+        error_msg = f"Ошибка загрузки файлов: {str(e)}"
+        return error_msg
 
 
 def launch_chat_interface(qa_chain, project_name):

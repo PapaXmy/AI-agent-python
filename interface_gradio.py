@@ -44,9 +44,11 @@ def load_selected_collection(project_name, progress=gr.Progress()):
         qa_chain = init_qa(vector_db)
 
         progress(1.0, desc="Готово!")
+        logger.info(f"Коллекция {project_name} успешно загружена")
         return qa_chain, f"Коллекция {project_name} успешно загружена!"
     except Exception as e:
         error_msg = f"Ошибка загрузки коллекции: {str(e)}"
+        logger.error(error_msg)
         return None, error_msg
 
 
@@ -79,12 +81,13 @@ def upload_and_index_files(files, project_name, progress=gr.Progress()):
         shutil.rmtree(temp_dir)
 
         progress(1.0, desc="Готово!")
-
+        logger.info(f"Вколлекци {project_name} добавлено {len(documents)} документов")
         return (
             f"Успешно добавлено {len(documents)} документов в коллекцию {project_name}"
         )
     except Exception as e:
         error_msg = f"Ошибка загрузки файлов: {str(e)}"
+        logger.error(error_msg)
         return error_msg
 
 

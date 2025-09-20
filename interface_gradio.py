@@ -88,6 +88,27 @@ def upload_and_index_files(files, project_name, progress=gr.Progress()):
         return error_msg
 
 
+def create_inteface():
+    """Создает интерфейс агента"""
+    with gr.Blocks(title="AI Python Agent", theme="soft") as demo:
+        qa_chain_state = gr.State()
+        gr.Markdown("# AI Python Agent")
+        gr.Markdown("Загрузите документы или выберите существующую коллекцию")
+
+        with gr.Tab("Выбор коллекции"):
+            with gr.Row():
+                project_dropdown = gr.Dropdown(
+                    choises=list_project() + ["Новая коллекция"],
+                    label="Выберите коллекцию",
+                    value="default",
+                )
+                refresh_btn = gr.Button("Обновить список")
+
+            load_status = gr.Textbox(label="Статус", interactive=False)
+            load_btn = gr.Button("Загрузить коллекцию")
+    return demo
+
+
 def launch_chat_interface(qa_chain, project_name):
     """Запуск Gradio интерфейса"""
     logger.info(f"Запуск интерфейса для коллекции: {project_name}")

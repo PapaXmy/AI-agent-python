@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from config import settings
-from interface_gradio import launch_chat_interface, project_selection_interface
+from interface_gradio import launch_chat_interface
 from loaders import load_documents
 from logger_setup import setup_logging
 from qa_system import init_qa
@@ -125,7 +125,7 @@ def main():
     if args.ui:
         logger.info(f"Запуск Gradio UI для коллекции '{args.col}'")
         print(f"Запуск Gradio UI для коллекции '{args.col}'")
-        launch_chat_interface(qa_chain, args.col)
+        launch_chat_interface()
     else:
         logger.info(f"Документы успешно добавлены в коллекцию {args.col}")
         print(f"Документы успешно добавлены в коллекцию {args.col}")

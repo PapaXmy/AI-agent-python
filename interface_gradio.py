@@ -28,6 +28,25 @@ def chat_with_history(message, history, qa_chain):
         return error_msg
 
 
+def load_selected_collection(project_name, progress=gr.Progress()):
+    """Загрузка выбранной коллекции"""
+    if not project_name == "Новая коллекция":
+        return None, "Пожалуйста выберите существующую коллекцию"
+
+    try:
+        progress(0.2, desc="Загрузка векторной базы...")
+        vector_db = get_vector_store(project_name=project_name)
+
+        progress(0.6, desc="Инициализация QA системы...")
+        qa_chain = init_qa(vector_db)
+
+        progress(1.0, desc="Готово!")
+        return qa_chain, f"Коллекция {project_name} успешно загружена!"
+    except Exception as e:
+        error_msg = f"Ошибка загрузки коллекции: {str(e)}"
+        return None, error_msg
+
+
 def launch_chat_interface(qa_chain, project_name):
     """Запуск Gradio интерфейса"""
     logger.info(f"Запуск интерфейса для коллекции: {project_name}")
@@ -37,8 +56,6 @@ def launch_chat_interface(qa_chain, project_name):
 
     chat_interface = gr.ChatInterface(
         fn=predict,
-        # inputs="text",
-        # outputs="text",
         title=f"AI Python Agent - коллекция: {project_name}",
         description="Задайте вопрос о вашей документации",
         theme="soft",

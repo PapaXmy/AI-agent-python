@@ -6,3 +6,4 @@ __pycache__
 docs/
 .gradio
 logs
+temp_uploads

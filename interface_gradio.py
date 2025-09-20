@@ -33,8 +33,8 @@ def chat_with_history(message, history, qa_chain):
 
 def load_selected_collection(project_name, progress=gr.Progress()):
     """Загрузка выбранной коллекции"""
-    if not project_name == "Новая коллекция":
-        return None, "Пожалуйста выберите существующую коллекцию"
+    # if not project_name == "Новая коллекция":
+    #     return None, "Пожалуйста выберите существующую коллекцию"
 
     try:
         progress(0.2, desc="Загрузка векторной базы...")
@@ -55,8 +55,8 @@ def upload_and_index_files(files, project_name, progress=gr.Progress()):
     if not files:
         return "Пожалуйста, выберите файлы для загрузки"
 
-    if not project_name or project_name == "Новая коллекция":
-        return "Пожалуйста, укажите название для новой коллекции"
+    # if not project_name or project_name == "Новая коллекция":
+    #     return "Пожалуйста, укажите название для новой коллекции"
 
     try:
         temp_dir = f"./temp_uploads/{project_name}"
@@ -98,7 +98,7 @@ def create_inteface():
         with gr.Tab("Выбор коллекции"):
             with gr.Row():
                 project_dropdown = gr.Dropdown(
-                    choises=list_project() + ["Новая коллекция"],
+                    choices=list_project(),
                     label="Выберите коллекцию",
                     value="default",
                 )
@@ -109,10 +109,10 @@ def create_inteface():
 
         with gr.Tab("Загрузка документов"):
             with gr.Row():
-                new_project_name = gr.Textbox(
-                    label="Название коллекции",
-                    placeholder="Введите название новой коллекции",
-                )
+                # new_project_name = gr.Textbox(
+                #     label="Название коллекции",
+                #     placeholder="Введите название новой коллекции",
+                # )
                 file_output = gr.File(
                     label="Загрузить файлы",
                     file_count="multiple",
@@ -134,7 +134,7 @@ def create_inteface():
         # обработчики для вкладки выбора коллекции
         def refresh_progect():
             projects = list_project()
-            return gr.Dropdown.update(choises=projects + ["Новая коллекция"])
+            return gr.Dropdown(choices=projects)
 
         refresh_btn.click(fn=refresh_progect, inputs=[], outputs=project_dropdown)
 
@@ -147,7 +147,7 @@ def create_inteface():
         # обработчик для вкладки загрузки документов
         upload_btn.click(
             fn=upload_and_index_files,
-            inputs=[file_output, new_project_name],
+            inputs=[file_output],
             outputs=upload_status,
         )
 
@@ -155,16 +155,20 @@ def create_inteface():
         def respond(message, chat_history, qa_chain):
             if qa_chain is None:
                 chat_history.append(
-                    message, 'Сначала загрузите коллекцию из вкладки "выбор коллекции"'
+                    (
+                        message,
+                        'Сначала загрузите коллекцию из вкладки "выбор коллекции"',
+                    )
                 )
 
                 return "", chat_history
 
             answer = chat_with_history(message, chat_history, qa_chain)
-            chat_history.append(message, answer)
+            chat_history.append((message, answer))
             return "", chat_history
 
         msg.submit(respond, [msg, chatbot, qa_chain_state], [msg, chatbot])
+        submit_btn.click(respond, [msg, chatbot, qa_chain_state], [msg, chatbot])
 
         clear_btn.click(lambda: None, None, chatbot, queue=False)
 

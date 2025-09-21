@@ -159,7 +159,8 @@ def create_inteface():
                 submit_btn = gr.Button("Отправить")
                 clear_btn = gr.Button("Очистить чат")
 
-        # обработчики для вкладки выбора коллекции
+        # обработчики
+
         def refresh_progect():
             """Обновляет список коллекций"""
             projects = list_project()
@@ -200,9 +201,21 @@ def create_inteface():
                     gr.Dropdown.update(),
                 )
 
+        # обработчики для вкладки выбора коллекции
+
         refresh_btn.click(fn=refresh_progect, inputs=[], outputs=project_dropdown)
-        create_project.click(fn=get_vector_store, inputs=[new_project_name])
-        delete_btn.click(fn=delete_project, inputs=[project_dropdown])
+        create_project.click(
+            fn=create_new_project,
+            inputs=[new_project_name],
+            outputs=[load_status, project_dropdown_name],
+        )
+
+        delete_btn.click(
+            fn=delete_project,
+            inputs=[project_dropdown],
+            outputs=[load_status, project_dropdown, project_dropdown_name],
+        )
+
         load_btn.click(
             fn=load_selected_collection,
             inputs=[project_dropdown],

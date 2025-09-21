@@ -27,6 +27,7 @@ def chat_with_history(message, history, qa_chain):
         return answer
     except Exception as e:
         error_msg = f"Ошибка: {str(e)}"
+        logger.exception("Текст ошибки")
         logger.error(f"Ошибка при обработке запроса: {error_msg}")
         return error_msg
 
@@ -122,6 +123,12 @@ def create_inteface():
 
         with gr.Tab("Загрузка документов"):
             with gr.Row():
+                project_dropdown_name = gr.Dropdown(
+                    choices=list_project(),
+                    label="Выберите коллекцию",
+                    value="default",
+                )
+
                 # new_project_name = gr.Textbox(
                 #     label="Название коллекции",
                 #     placeholder="Введите название новой коллекции",
@@ -160,7 +167,7 @@ def create_inteface():
         # обработчик для вкладки загрузки документов
         upload_btn.click(
             fn=upload_and_index_files,
-            inputs=[file_output],
+            inputs=[file_output, project_dropdown_name],
             outputs=upload_status,
         )
 

@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 
 from config import settings
 from embeddings import get_embeddings
@@ -18,7 +18,7 @@ def get_vector_store(
 ):
     """Создает или загружает векторую базу данных"""
     logger.info(f"Инициализация векторной базы данных для коллекции: {project_name}")
-    use_openai = provider == "openai"
+    use_openai = provider == "local"
     embedding_function = get_embeddings(use_openai=use_openai, model_name=model_name)
     project_path = os.path.join(settings.chroma_db_path, project_name)
     os.makedirs(project_path, exist_ok=True)

@@ -161,8 +161,44 @@ def create_inteface():
 
         # обработчики для вкладки выбора коллекции
         def refresh_progect():
+            """Обновляет список коллекций"""
             projects = list_project()
-            return gr.Dropdown(choices=projects)
+            return [gr.Dropdown.udate(choices=projects)] * 2
+
+        def create_new_project(project_name):
+            """Создает новую коллекцию"""
+            if not project_name:
+                return (
+                    "Имя проекта не может быть пустым",
+                    gr.Dropdown.update(),
+                    gr.Dropdown.update(),
+                )
+
+            vector_db = get_vector_store(
+                documents=None, project_name=project_name, provider="local"
+            )
+            projects = list_project()
+            return (
+                f"Коллекция {project_name} создана",
+                gr.Dropdown.update(choices=projects, value=project_name),
+                gr.Dropdown.update(choices=projects, value=project_name),
+            )
+
+        def delete_project(project_name):
+            """Удаляет выбранную коллецию"""
+            if delete_project(project_name):
+                projects = list_project()
+                return (
+                    f"Коллекция {project_name} удалена",
+                    gr.Dropdown.update(choices=projects),
+                    gr.Dropdown.update(choices=projects),
+                )
+            else:
+                return (
+                    f'Не удалось удалить коллекцию "{project_name}"',
+                    gr.Dropdown.update(),
+                    gr.Dropdown.update(),
+                )
 
         refresh_btn.click(fn=refresh_progect, inputs=[], outputs=project_dropdown)
         create_project.click(fn=get_vector_store, inputs=[new_project_name])

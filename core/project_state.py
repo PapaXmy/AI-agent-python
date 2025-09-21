@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -24,3 +24,16 @@ class ProjectState:
     def update_status(self, status: str):
         """Обновляет статус проекта"""
         self.status = status
+
+    def get_status(self):
+        """Возвращает текущий статус проекта"""
+        return {
+            "session_id": self.session_id,
+            "status": self.status,
+            "plan": self.plan,
+            "files": list(self.get_project_files()),
+        }
+
+    def get_project_files(self):
+        """Возвращает список файлов проекта"""
+        return self.session_path.rglob("*")

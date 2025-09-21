@@ -4,8 +4,8 @@ import shutil
 
 from langchain_community.vectorstores import Chroma
 
-from config import settings
-from embeddings import get_embeddings
+from .config import settings
+from .embeddings import get_embeddings
 
 logger = logging.getLogger(__name__)
 

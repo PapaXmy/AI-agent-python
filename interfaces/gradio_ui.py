@@ -4,9 +4,9 @@ import shutil
 
 import gradio as gr
 
-from loaders import load_documents
-from qa_system import init_qa
-from vector_store import (
+from utils.loaders import load_documents
+from utils.qa_system import init_qa
+from utils.vector_store import (
     add_documents_to_store,
     delete_project,
     get_vector_store,

@@ -4,7 +4,7 @@ from typing import List
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
 
-from config import settings
+from .config import settings
 
 logger = logging.getLogger(__name__)
 

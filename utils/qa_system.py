@@ -5,7 +5,7 @@ from langchain.prompts import PromptTemplate
 from langchain_community.llms import HuggingFaceHub
 from langchain_openai import ChatOpenAI
 
-from config import settings
+from .config import settings
 
 logger = logging.getLogger(__name__)
 

@@ -1,12 +1,12 @@
 import argparse
 import logging
 
-from config import settings
-from interface_gradio import launch_chat_interface
-from loaders import load_documents
-from logger_setup import setup_logging
-from qa_system import init_qa
-from vector_store import delete_project, get_vector_store, list_project
+from interfaces.gradio_ui import launch_chat_interface
+from utils.config import settings
+from utils.loaders import load_documents
+from utils.logger_setup import setup_logging
+from utils.qa_system import init_qa
+from utils.vector_store import delete_project, get_vector_store, list_project
 
 logger = logging.getLogger(__name__)
 

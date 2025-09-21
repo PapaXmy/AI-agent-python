@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_api_base: str = ""
     chroma_db_path: str = "./chroma_db"
-    redis_host = ""  # заглушка
-    redis_port = ""  # заглушка
+    # redis_host = ""  # заглушка
+    # redis_port = ""  # заглушка
 
     class Config:
         env_file = ".env"

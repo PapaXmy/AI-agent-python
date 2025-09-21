@@ -1,8 +1,8 @@
 import logging
 
-from ..message_manager import MessageManager
-from ..qa_system import init_qa
-from ..vector_store import get_vector_store
+from utils.message_manager import MessageManager
+from utils.qa_system import init_qa
+from utils.vector_store import get_vector_store
 
 logger = logging.getLogger(__name__)
 

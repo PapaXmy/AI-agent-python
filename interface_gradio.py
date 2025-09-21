@@ -121,7 +121,7 @@ def create_inteface():
                     label="Выберите коллекцию",
                     value="default",
                 )
-                refresh_btn = gr.Button("Обновить список")
+                # refresh_btn = gr.Button("Обновить список")
                 delete_btn = gr.Button("Удалить выбранную коллекцию")
             with gr.Row():
                 new_project_name = gr.Textbox(
@@ -161,18 +161,18 @@ def create_inteface():
 
         # обработчики
 
-        def refresh_progect():
-            """Обновляет список коллекций"""
-            projects = list_project()
-            return [gr.Dropdown.udate(choices=projects)] * 2
+        # def refresh_progect():
+        #     """Обновляет список коллекций"""
+        #     projects = list_project()
+        #     return [gr.update(choices=projects)] * 2
 
         def create_new_project(project_name):
             """Создает новую коллекцию"""
             if not project_name:
                 return (
                     "Имя проекта не может быть пустым",
-                    gr.Dropdown.update(),
-                    gr.Dropdown.update(),
+                    gr.update(),
+                    gr.update(),
                 )
 
             vector_db = get_vector_store(
@@ -181,37 +181,36 @@ def create_inteface():
             projects = list_project()
             return (
                 f"Коллекция {project_name} создана",
-                gr.Dropdown.update(choices=projects, value=project_name),
-                gr.Dropdown.update(choices=projects, value=project_name),
+                gr.update(choices=projects, value=project_name),
+                gr.update(choices=projects, value=project_name),
             )
 
-        def delete_project(project_name):
+        def delete_selected_project(project_name):
             """Удаляет выбранную коллецию"""
             if delete_project(project_name):
                 projects = list_project()
                 return (
                     f"Коллекция {project_name} удалена",
-                    gr.Dropdown.update(choices=projects),
-                    gr.Dropdown.update(choices=projects),
+                    gr.update(choices=projects),
+                    gr.update(choices=projects),
                 )
             else:
                 return (
                     f'Не удалось удалить коллекцию "{project_name}"',
-                    gr.Dropdown.update(),
-                    gr.Dropdown.update(),
+                    gr.update(),
+                    gr.update(),
                 )
 
         # обработчики для вкладки выбора коллекции
 
-        refresh_btn.click(fn=refresh_progect, inputs=[], outputs=project_dropdown)
         create_project.click(
             fn=create_new_project,
             inputs=[new_project_name],
-            outputs=[load_status, project_dropdown_name],
+            outputs=[load_status, project_dropdown, project_dropdown_name],
         )
 
         delete_btn.click(
-            fn=delete_project,
+            fn=delete_selected_project,
             inputs=[project_dropdown],
             outputs=[load_status, project_dropdown, project_dropdown_name],
         )

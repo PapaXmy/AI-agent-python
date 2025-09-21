@@ -39,3 +39,10 @@ class Orchestrator:
                 developer.execute_task(task, project_state)
 
             return session_id
+
+    def get_session_status(self, session_id: str) -> Dict[str, Any]:
+        """Возвращает статус сессии"""
+        if session_id not in self.active_session:
+            return {"error": "Сессия не найдена"}
+
+        return self.active_session[session_id].get_status()

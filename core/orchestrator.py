@@ -3,6 +3,9 @@ import uuid
 from pathlib import Path
 from typing import Any, Dict
 
+from agents.developer_agent import DeveloperAgent
+from agents.planer_agent import PlannerAgent
+
 from .project_state import ProjectState
 
 logger = logging.getLogger(__name__)
@@ -27,3 +30,12 @@ class Orchestrator:
                 f.write(tech_spec)
 
             # запуск планировщика
+            planner = PlannerAgent()
+            plan = planner.generate_plan(tech_spec)
+
+            # раздаем задачи для разработчика
+            developer = DeveloperAgent()
+            for task in plan:
+                developer.execute_task(task, project_state)
+
+            return session_id

@@ -6,7 +6,12 @@ import gradio as gr
 
 from loaders import load_documents
 from qa_system import init_qa
-from vector_store import add_documents_to_store, get_vector_store, list_project
+from vector_store import (
+    add_documents_to_store,
+    delete_project,
+    get_vector_store,
+    list_project,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +122,13 @@ def create_inteface():
                     value="default",
                 )
                 refresh_btn = gr.Button("Обновить список")
+                delete_btn = gr.Button("Удалить выбранную коллекцию")
+            with gr.Row():
+                new_project_name = gr.Textbox(
+                    label="Название коллекции",
+                    placeholder="Введите название новой коллекции",
+                )
+                create_project = gr.Button("Создать новую коллекцию")
 
             load_status = gr.Textbox(label="Статус", interactive=False)
             load_btn = gr.Button("Загрузить коллекцию")
@@ -129,10 +141,6 @@ def create_inteface():
                     value="default",
                 )
 
-                # new_project_name = gr.Textbox(
-                #     label="Название коллекции",
-                #     placeholder="Введите название новой коллекции",
-                # )
                 file_output = gr.File(
                     label="Загрузить файлы",
                     file_count="multiple",
@@ -157,7 +165,8 @@ def create_inteface():
             return gr.Dropdown(choices=projects)
 
         refresh_btn.click(fn=refresh_progect, inputs=[], outputs=project_dropdown)
-
+        create_project.click(fn=get_vector_store, inputs=[new_project_name])
+        delete_btn.click(fn=delete_project, inputs=[project_dropdown])
         load_btn.click(
             fn=load_selected_collection,
             inputs=[project_dropdown],

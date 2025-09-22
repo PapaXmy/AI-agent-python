@@ -1,11 +1,65 @@
+import logging
+import re
+from pathlib import Path
+
+from langchain.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+
 from agents.base_agent import BaseAgent
+from core.file_manager import FileManager
+from utils.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class DeveloperAgent(BaseAgent):
     """Агент разработчик"""
 
     def __init__(self):
+        super().__init__("developer", "default")
+
+    def execute_task(self, task: dict, project_state):
+        """ВЫполняет задачу разработки"""
+        project_context = self.get_project_context(project_state.session_path)
+
+        prompt_template = """Ты - senior Python-разработчик. Выполни задачу. У
+        тебя есть доступ к текущим файлам проекта.
+        
+        ЗАДАЧА: {task_description}
+        
+        ТЕКУЩИЕ ФАЙЛЫ ПРОЕКТА:
+        {project_context}
+        
+        В своем ответе ты должен указать ТОЛЬКО код, который нужно изменить, в формате:
+        VERBATIM_START_FILENAME: {путь_к_файлу}
+        {код файла целиком}
+        VERBATIM_END_FILENAME: {путь_к_файлу}
+        
+        Если файл новый, создай его. Если изменяешь существующий, предоставь
+        ПОЛНЫЙ код файла с изменениями."""
+
+        prompt = PromptTemplate(
+            template=prompt_template,
+            input_variables=["task_description", "project_context"],
+        )
+
+        llm = ChatOpenAI(
+            model="gpt-4.1",
+            temperature=0.1,
+            openai_api_key=settings.openai_api_key,
+            openai_api_base=settings.openai_api_base,
+        )
+
+        response = llm.invoke(
+            prompt.format(
+                task_description=task["description"], project_context=project_context
+            )
+        )
+
+        self.apply_changes(response.content, project_state.session_path)
+
+    def get_project_context(self):
         pass
 
-    def execute_task(self):
+    def apply_changes(self):
         pass

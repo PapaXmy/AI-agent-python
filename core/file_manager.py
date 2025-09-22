@@ -14,3 +14,14 @@ class FileManager:
         except Exception as e:
             logger.error(f"Ошибка чтения файла {file_path}: {e}")
             return ""
+
+    @staticmethod
+    def write_file_content(file_path: Path, content: str):
+        """Запись в файл"""
+        try:
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            logger.info(f"Файл записан: {file_path}")
+        except Exception as e:
+            logger.error(f"Ошибка записи файла {file_path}: {e}")

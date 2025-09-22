@@ -25,3 +25,12 @@ class FileManager:
             logger.info(f"Файл записан: {file_path}")
         except Exception as e:
             logger.error(f"Ошибка записи файла {file_path}: {e}")
+
+    @staticmethod
+    def get_project_structure(project_path: Path) -> str:
+        """Возвращает структуру файлов проекта в виде строки"""
+        structure = []
+        for file in project_path.rglob("*"):
+            if file.is_file():
+                structure.append(str(file.relative_to(project_path)))
+        return "\n".join(structure)

@@ -58,8 +58,15 @@ class DeveloperAgent(BaseAgent):
 
         self.apply_changes(response.content, project_state.session_path)
 
-    def get_project_context(self):
-        pass
+    def get_project_context(self, project_path: Path):
+        """Возвращает контекст проекта (все файлы и их содержимое)"""
+        context = []
+        for file in project_path.rglob("*"):
+            if file.is_file():
+                content = FileManager.read_file_content(file)
+                context.append(f"{file.relative_to(project_path)}:\n{context}\n")
+
+        return "\n".join(context)
 
     def apply_changes(self):
         pass

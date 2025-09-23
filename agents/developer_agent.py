@@ -31,9 +31,9 @@ class DeveloperAgent(BaseAgent):
         {project_context}
         
         В своем ответе ты должен указать ТОЛЬКО код, который нужно изменить, в формате:
-        VERBATIM_START_FILENAME: {путь_к_файлу}
+        START_FILENAME: {путь_к_файлу}
         {код файла целиком}
-        VERBATIM_END_FILENAME: {путь_к_файлу}
+        END_FILENAME: {путь_к_файлу}
         
         Если файл новый, создай его. Если изменяешь существующий, предоставь
         ПОЛНЫЙ код файла с изменениями."""
@@ -68,5 +68,15 @@ class DeveloperAgent(BaseAgent):
 
         return "\n".join(context)
 
-    def apply_changes(self):
-        pass
+    def apply_changes(self, response: str, project_path: Path):
+        """Применяет изменения к файлам проекта на основе ответа LLM"""
+        pattern = r"START_FILENAME:\s*(.+?)\n(.*?)END_FILENAME:\s*\1"
+        matches = re.findall(pattern, response, re.DOTALL)
+
+        for (
+            file_path,
+            content,
+        ) in matches:
+            full_path = project_path / file_path.strip()
+            FileManager.write_file_content(full_path, content.strip())
+            logger.info(f"Файл обновлен: {file_path}")

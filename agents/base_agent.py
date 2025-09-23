@@ -13,9 +13,9 @@ class BaseAgent:
         self.collection_name = collection_name
         self.manager = MessageManager()
         self.qa_chain = None
-        self.load_knoledge(collection_name)
+        self.load_knowledge(collection_name)
 
-    def load_knoledge(self, collection_name):
+    def load_knowledge(self, collection_name):
         """Загрузка базы знаний для агента"""
         try:
             vector_db = get_vector_store(project_name=collection_name)

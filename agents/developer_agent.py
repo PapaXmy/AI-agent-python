@@ -1,8 +1,10 @@
 import logging
 import re
 from pathlib import Path
+from typing import Dict
 
 from langchain.prompts import PromptTemplate
+from langchain.schema import Documents
 from langchain_openai import ChatOpenAI
 
 from agents.base_agent import BaseAgent
@@ -20,11 +22,24 @@ class DeveloperAgent(BaseAgent):
 
     def execute_task(self, task: dict, project_state):
         """ВЫполняет задачу разработки"""
+        logger.info(f"Выполнение задачи: {task['id']} - {task['description']}")
+
+        if task.get("depends_on"):
+            if not self.check_dependencies(task["depends_on"], project_state):
+                return {
+                    "status": "waiting",
+                    "message": "Ожидание выполнения зависимостей",
+                }
+
         project_context = self.get_project_context(project_state.session_path)
+        rag_context = self.get_rag_context(task["description"])
 
         prompt_template = """Ты - senior Python-разработчик. Выполни задачу. У
         тебя есть доступ к текущим файлам проекта.
         
+        КОНТЕКСТ ИЗ ДОКУМЕНТАЦИИ:
+        {rag_context}
+
         ЗАДАЧА: {task_description}
         
         ТЕКУЩИЕ ФАЙЛЫ ПРОЕКТА:
@@ -40,7 +55,7 @@ class DeveloperAgent(BaseAgent):
 
         prompt = PromptTemplate(
             template=prompt_template,
-            input_variables=["task_description", "project_context"],
+            input_variables=["task_description", "project_context", "rag_context"],
         )
 
         llm = ChatOpenAI(
@@ -52,11 +67,25 @@ class DeveloperAgent(BaseAgent):
 
         response = llm.invoke(
             prompt.format(
-                task_description=task["description"], project_context=project_context
+                task_description=task["description"],
+                project_context=project_context,
+                rag_contex=rag_context,
             )
         )
 
-        self.apply_changes(response.content, project_state.session_path)
+        changes = self.apply_changes(response.content, project_state.session_path)
+        return {
+            "status": "completed",
+            "task_id": task["id"],
+            "changes": changes,
+            "message": f"Задача: {task['id']} выполнена",
+        }
+
+    def get_rag_context(self):
+        pass
+
+    def check_dependencies(self):
+        pass
 
     def get_project_context(self, project_path: Path):
         """Возвращает контекст проекта (все файлы и их содержимое)"""

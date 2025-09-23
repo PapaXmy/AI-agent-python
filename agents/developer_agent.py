@@ -87,15 +87,15 @@ class DeveloperAgent(BaseAgent):
     def check_dependencies(self):
         pass
 
-    def get_project_context(self, project_path: Path):
+    def get_project_context(self, project_path: Path) -> str:
         """Возвращает контекст проекта (все файлы и их содержимое)"""
         context = []
         for file in project_path.rglob("*"):
-            if file.is_file():
+            if file.is_file() and file.suffix in [".py", ".txt", ".md", "json"]:
                 content = FileManager.read_file_content(file)
-                context.append(f"{file.relative_to(project_path)}:\n{context}\n")
+                context.append(f"{file.relative_to(project_path)}:\n{content}\n")
 
-        return "\n".join(context)
+        return "\n".join(context) if context else "Файлы контекста отсутствуют"
 
     def apply_changes(self, response: str, project_path: Path):
         """Применяет изменения к файлам проекта на основе ответа LLM"""

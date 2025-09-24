@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -17,8 +17,15 @@ logger = logging.getLogger(__name__)
 class RAGManager:
     """Централизованный менеджер для работы с RAG системой"""
 
-    def __init__(self, project_name: str = "default"):
+    def __init__(
+        self,
+        project_name: str = "default",
+        provider: str = "local",
+        model_name: str = "BAAI/bge-large-en",
+    ):
         self.project_name = project_name
+        self.provider = provider
+        self.model_name = model_name
         self.vector_db = None
         self.initialized = False
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -28,35 +35,46 @@ class RAGManager:
         self.load_documents = LoadersManager()
         self._initialize_vector_store()
 
-    def _initialize_vector_store(
-        self,
-        provider: str = "local",
-        model_name: str = "BAAI/bge-large-en",
-    ):
+    def _initialize_vector_store(self, documents: Optional[List[Document]] = None):
         """Создает или загружает векторую базу данных"""
         logger.info(
             f"Инициализация векторной базы данных для коллекции: {self.project_name}"
         )
         try:
-            use_openai = provider == "local"
+            use_openai = self.provider == "local"
             embedding_function = get_embeddings(
-                use_openai=use_openai, model_name=model_name
+                use_openai=use_openai, model_name=self.model_name
             )
-            project_path = Path(settings.chroma_db_path) / self.project_name
-            project_path.mkdir(parents=True, exist_ok=True)
+            project_path = os.path.join(settings.chroma_db_path, self.project_name)
+            os.makedirs(project_path, exist_ok=True)
+            collection_name = f"{self.project_name}"
 
-            self.vector_db = Chroma(
-                embedding_function=embedding_function,
-                persist_directory=str(project_path),
-                collection_name=self.project_name,
-            )
-
-            data = self.vector_db.get()
-            if data and data.get("ids") > 0:
+            if documents:
+                logger.info(
+                    f"Создание новой векторной БД с {len(documents)} документами"
+                )
+                self.vector_db = Chroma.from_documents(
+                    documents=documents,
+                    embedding_function=embedding_function,
+                    persist_directory=project_path,
+                    collection_name=collection_name,
+                )
                 self.initialized = True
-                logger.info(f"Векторная база для {self.project_name} загружена")
+                logger.info("Векторная БД успешно создана")
             else:
-                logger.warning(f"Коллекция {self.project_name} пустая")
+                logger.info(f"Загрузка существующей базы данных {self.project_name}")
+                self.vector_db = Chroma(
+                    persist_directory=project_path,
+                    embedding_function=embedding_function,
+                    collection_name=collection_name,
+                )
 
+                # data = self.vector_db.get()
+                # if data and data.get("ids") > 0:
+                #     self.initialized = True
+                #     logger.info(f"Векторная база для {self.project_name} загружена")
+                # else:
+                #     logger.warning(f"Коллекция {self.project_name} пустая")
+                #
         except Exception as e:
             logger.error(f"Ошибка инициализации векторной базы данных")

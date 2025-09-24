@@ -82,7 +82,11 @@ class DeveloperAgent(BaseAgent):
         }
 
     def get_rag_context(self):
-        pass
+        """Получает материалы из базы данных"""
+        if not self.qa_chain:
+            return 'Документация не доступна'
+        try:
+            result = self.qa_chain.
 
     def check_dependencies(self):
         pass

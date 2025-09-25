@@ -151,3 +151,29 @@ class RAGManager:
         except Exception as e:
             logger.error(f"Ошибка поиска: {e}")
             return f"Ошибка поиска {str(e)}"
+
+    def get_collection_info(self) -> Dict[str, Any]:
+        """Возвращает информацию о коллекции"""
+        if not self.vector_db:
+            return {"error": "Векторная БД не инициализирована"}
+
+        try:
+            collection_info = self.vector_db.get()
+            count = (
+                len(collection_info["ids"])
+                if collection_info and "ids" in collection_info
+                else 0
+            )
+            return {
+                "project_name": self.project_name,
+                "provider": self.provider,
+                "model_name": self.model_name,
+                "document_count": count,
+                "initialized": self.initialized,
+                "collection_path": os.path.join(
+                    settings.chroma_db_path, self.project_name
+                ),
+            }
+        except Exception as e:
+            logger.error(f"Информация о коллекции не найдена: {e}")
+            return {"error": str(e)}

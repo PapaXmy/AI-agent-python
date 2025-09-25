@@ -86,6 +86,7 @@ class RAGManager:
         logger.info(f"Инициализация БД из {docs_path}")
         try:
             raw_documents = self.load.load_documents(docs_path)
+
             if not raw_documents:
                 logger.error("Не найдено документов для загрузки")
                 return False
@@ -113,6 +114,7 @@ class RAGManager:
                 return False
 
             raw_documents = self.load.load_documents(docs_path)
+
             if not raw_documents:
                 logger.error("Ненайдено документов для добавления")
                 return False
@@ -125,3 +127,27 @@ class RAGManager:
         except Exception as e:
             logger.error(f"Ошибка добавления документов: {e}")
             return False
+
+    def get_context(self, query: str, max_docs: int = 3):
+        """Получает форматированный контекст для промпта"""
+        if not self.initialized or not self.vector_db:
+            return "База знаний не инициализирована, запустите скрипт инициализации БД"
+
+        try:
+            docs = self.vector_db.similarity_search(query, k=max_docs)
+
+            if not docs:
+                return "Подходящая документация не найдена"
+
+            context_parts = []
+
+            for i, doc in enumerate(docs, 1):
+                source = doc.metadata.get("souce", "Неизвестный источник")
+                context_parts.append(
+                    f"[Документ {i} из {source}]:\n{doc.page_content}\n"
+                )
+            return "\n".join(context_parts)
+
+        except Exception as e:
+            logger.error(f"Ошибка поиска: {e}")
+            return f"Ошибка поиска {str(e)}"

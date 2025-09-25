@@ -104,3 +104,24 @@ class RAGManager:
         except Exception as e:
             logger.error(f"Ошибка инициализации базы знаний {e}")
             return False
+
+    def add_document(self, docs_path: str) -> bool:
+        """Добавляет новые документы в базу данных"""
+        try:
+            if not self.vector_db or not self.initialized:
+                logger.error("База данных не инициализирована")
+                return False
+
+            raw_documents = self.load.load_documents(docs_path)
+            if not raw_documents:
+                logger.error("Ненайдено документов для добавления")
+                return False
+            documents = self.text_splitter.split_documents(raw_documents)
+            self.vector_db.add_documents(documents)
+
+            logger.info(f"Добавлено {len(documents)} документов в базу знаний")
+            return True
+
+        except Exception as e:
+            logger.error(f"Ошибка добавления документов: {e}")
+            return False

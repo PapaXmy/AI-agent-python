@@ -10,8 +10,9 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_api_base: str = ""
     chroma_db_path: str = "./chroma_db"
-    # redis_host = ""  # заглушка
-    # redis_port = ""  # заглушка
+
+    embeddings_provider: str = "local"
+    embeddings_model: str = "BAAI/bge-large-en"
 
     class Config:
         env_file = ".env"
@@ -21,6 +22,9 @@ class Settings(BaseSettings):
 
 try:
     Path("./chroma_db").mkdir(exist_ok=True)
+    Path("./logs").mkdir(exist_ok=True)
+    Path("./projects").mkdir(exist_ok=True)
+    Path("./docs").mkdir(exist_ok=True)
     logger.info("Директория для Chroms DB создана или уже существует")
 except Exception as e:
     logger.error(f"Ошибка создания директории для Chroma DB: {e}")

@@ -1,47 +1,17 @@
 import logging
 
-from utils.message_manager import MessageManager
-from utils.qa_system import init_qa
-from utils.vector_store import get_vector_store
+from utils.rag_manager import RAGManager
 
 logger = logging.getLogger(__name__)
 
 
 class BaseAgent:
-    def __init__(self, agent_type, collection_name):
+    def __init__(self, agent_type: str, project_name: str = "default"):
         self.agent_type = agent_type
-        self.collection_name = collection_name
-        self.manager = MessageManager()
-        self.qa_chain = None
-        self.load_knowledge(collection_name)
+        self.project_name = project_name
+        self.rag_manager = RAGManager(project_name)
+        logger.info(f"Агент {agent_type} инициализирован")
 
-    def load_knowledge(self, collection_name):
-        """Загрузка базы знаний для агента"""
-        try:
-            vector_db = get_vector_store(project_name=collection_name)
-            self.qa_chain = init_qa(vector_db)
-            logger.info(f"Агент {self.agent_type} загрузил коллекцию {collection_name}")
-        except Exception as e:
-            logger.error(f"Ошибка загрузки коллекции {collection_name}: {e}")
-            logger.exception("")
-
-    def process_task(self, task_data):
-        """Обработка задачи - должен быть переопределен в дочерних классах"""
-        raise NotImplementedError("Метод process_task должен быть реализован")
-
-    def start_listening(self):
-        """Запуск прослушивания очереди задач"""
-        logger.info(f"Агент {self.agent_type} начал прослушивание очереди")
-        while True:
-            task = self.manager.get_task(f"queue:{self.agent_type}")
-            if task:
-                result = self.process_task(task)
-
-                self.manager.send_task(
-                    f"queue:next_step",
-                    {
-                        "from_agent": self.agent_type,
-                        "task_id": task.get("task_id"),
-                        "result": result,
-                    },
-                )
+    def get_rag_context(self, query: str, max_docs: int = 3) -> str:
+        """Получает контекст из RAG системы"""
+        return self.rag_manager.get_context(query, max_docs)

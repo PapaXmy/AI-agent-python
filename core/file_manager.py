@@ -5,6 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 class FileManager:
+    """Утилиты для работы с файлами"""
+
     @staticmethod
     def read_file_content(file_path: Path) -> str:
         """Читает содержимое файла"""

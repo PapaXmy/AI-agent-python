@@ -31,9 +31,9 @@ class ProjectState:
             "session_id": self.session_id,
             "status": self.status,
             "plan": self.plan,
-            "files": list(self.get_project_files()),
+            "files": [
+                str(f.relative_to(self.session_path))
+                for f in self.session_path.rglob("*")
+                if f.is_file()
+            ],
         }
-
-    def get_project_files(self):
-        """Возвращает список файлов проекта"""
-        return self.session_path.rglob("*")

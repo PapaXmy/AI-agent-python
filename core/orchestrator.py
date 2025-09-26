@@ -5,6 +5,7 @@ from typing import Any, Dict
 
 from agents.developer_agent import DeveloperAgent
 from agents.planer_agent import PlannerAgent
+from core.file_manager import FileManager
 
 from .project_state import ProjectState
 
@@ -14,6 +15,9 @@ logger = logging.getLogger(__name__)
 class Orchestrator:
     def __init__(self):
         self.active_session: Dict[str, ProjectState] = {}
+        self.planner = PlannerAgent()
+        self.developer = DeveloperAgent()
+        logger.info("Оркестратор инициализирован")
 
         def start_new_session(self, tech_spec: str) -> str:
             """Создает новую сессию и возвращает ее ID"""
@@ -26,12 +30,28 @@ class Orchestrator:
             self.active_session[session_id] = project_state
 
             # сохранение ТЗ в текстовый файл
-            with open(session_path / "tech_spec.txt", "w") as f:
-                f.write(tech_spec)
+            FileManager.write_file_content(session_path / "tech_spec.txt", tech_spec)
+            project_state.update_status("planning")
 
-            # запуск планировщика
-            planner = PlannerAgent()
-            plan = planner.generate_plan(tech_spec)
+            try:
+                # запуск планировщика
+
+                plan = self.planner.generate_plan(tech_spec)
+                project_state.update_plan(plan)
+                project_state.update_status("coding")
+
+                for task in plan:
+                    logger.info(f"Обработка задачи {task['id']}")
+                    result = self.developer.execute_task(task, project_state)
+
+                project_state.update_status("completed")
+                logger.info(f"Сессия {session_id} завершена")
+
+            except Exception as e:
+                project_state.update_status(f"error: {str(e)}")
+                logger.error(f"Ошибка сессии {session_id}: {e}")
+
+            return session_id
 
             # раздаем задачи для разработчика
             developer = DeveloperAgent()

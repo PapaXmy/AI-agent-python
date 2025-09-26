@@ -48,3 +48,23 @@ class AutoDevSuiteUI:
                     files_display,
                 ],
             )
+
+    def start_session(self, tech_spec):
+        """Запускает новую сессию"""
+        if not tech_spec.strip():
+            return "", "Ошибка: ТЗ не может быть пустым", None, None
+
+        try:
+            session_id = self.orchestrator.start_new_session(tech_spec)
+            status = self.orchestrator.get_session_status(session_id)
+
+            return (
+                session_id,
+                status.get("status", "unknow"),
+                status.get("plan", []),
+                self.get_session_files(session_id),
+            )
+
+        except Exception as e:
+            logger.error(f"Ошибка запуска сессии: {e}")
+            return "", f"Ошибка: {str(e)}", None, None

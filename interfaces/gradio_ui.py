@@ -36,3 +36,15 @@ class AutoDevSuiteUI:
             with gr.Row():
                 plan_display = gr.JSON(label="План разработки")
                 files_display = gr.File(label="Файлы проекта", file_count="multiple")
+
+            # обработчик событий
+            start_btn.click(
+                self.start_session,
+                inputs=tech_spec_input,
+                outputs=[
+                    session_id_display,
+                    status_display,
+                    plan_display,
+                    files_display,
+                ],
+            )

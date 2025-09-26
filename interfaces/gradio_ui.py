@@ -1,5 +1,6 @@
 import logging
 import gradio as gr
+from pathlib import Path
 from core.orchestrator import Orchestrator
 from utils.logger_setup import setup_logging
 
@@ -68,3 +69,11 @@ class AutoDevSuiteUI:
         except Exception as e:
             logger.error(f"Ошибка запуска сессии: {e}")
             return "", f"Ошибка: {str(e)}", None, None
+
+    def get_session_files(self, session_id):
+        """Возвращает файлы файлы сессии"""
+        if not session_id:
+            return None
+
+        session_path = Path(f"./projects/{session_id}")
+        return [str(f) for f in session_path.rglob("*") if f.is_file()]

@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Dict
 
 from langchain.prompts import PromptTemplate
-from langchain.schema import Documents
 from langchain_openai import ChatOpenAI
 
 from agents.base_agent import BaseAgent
@@ -20,18 +19,11 @@ class DeveloperAgent(BaseAgent):
     def __init__(self):
         super().__init__("developer", "default")
 
-    def execute_task(self, task: dict, project_state):
+    def execute_task(self, task: Dict, project_state) -> Dict:
         """ВЫполняет задачу разработки"""
         logger.info(f"Выполнение задачи: {task['id']} - {task['description']}")
 
-        if task.get("depends_on"):
-            if not self.check_dependencies(task["depends_on"], project_state):
-                return {
-                    "status": "waiting",
-                    "message": "Ожидание выполнения зависимостей",
-                }
-
-        project_context = self.get_project_context(project_state.session_path)
+        project_context = self._get_project_context(project_state.session_path)
         rag_context = self.get_rag_context(task["description"])
 
         prompt_template = """Ты - senior Python-разработчик. Выполни задачу. У
@@ -73,7 +65,8 @@ class DeveloperAgent(BaseAgent):
             )
         )
 
-        changes = self.apply_changes(response.content, project_state.session_path)
+        changes = self._apply_changes(response.content, project_state.session_path)
+
         return {
             "status": "completed",
             "task_id": task["id"],
@@ -81,35 +74,31 @@ class DeveloperAgent(BaseAgent):
             "message": f"Задача: {task['id']} выполнена",
         }
 
-    def get_rag_context(self):
-        """Получает материалы из базы данных"""
-        if not self.qa_chain:
-            return 'Документация не доступна'
-        try:
-            result = self.qa_chain.
-
-    def check_dependencies(self):
-        pass
-
-    def get_project_context(self, project_path: Path) -> str:
-        """Возвращает контекст проекта (все файлы и их содержимое)"""
+    def _get_project_context(self, project_path: Path) -> str:
+        """Возвращает контекст проекта"""
         context = []
+
         for file in project_path.rglob("*"):
-            if file.is_file() and file.suffix in [".py", ".txt", ".md", "json"]:
+
+            if file.is_file() and file.suffix in [".py", ".txt", ".md", ".json"]:
                 content = FileManager.read_file_content(file)
-                context.append(f"{file.relative_to(project_path)}:\n{content}\n")
+                context.append(f"{file.relative_to(project_path)}: \n{content}\n")
 
-        return "\n".join(context) if context else "Файлы контекста отсутствуют"
+        return "/n".join(context) if context else "Фалы контекста отсутствуют"
 
-    def apply_changes(self, response: str, project_path: Path):
+    def _apply_changes(self, response: str, project_path: Path):
         """Применяет изменения к файлам проекта на основе ответа LLM"""
         pattern = r"START_FILENAME:\s*(.+?)\n(.*?)END_FILENAME:\s*\1"
         matches = re.findall(pattern, response, re.DOTALL)
 
+        changes = {}
         for (
             file_path,
             content,
         ) in matches:
             full_path = project_path / file_path.strip()
             FileManager.write_file_content(full_path, content.strip())
+            changes[file_path] = "создан" if not full_path.exists() else "изменен"
             logger.info(f"Файл обновлен: {file_path}")
+
+        return changes

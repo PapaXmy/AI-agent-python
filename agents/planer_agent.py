@@ -45,7 +45,7 @@ class PlannerAgent(BaseAgent):
             return plan
         except json.JSONDecodeError as e:
             logger.error(f"Очибка чтения файла JSON: {e}")
-            raise ValueError("Неверный файл JSON")
+            return self._create_fallback_plan(tech_spec)
 
     def _create_fallback_plan(self, tech_spec: str) -> List[Dict]:
         """Создает простой план при ошибке"""

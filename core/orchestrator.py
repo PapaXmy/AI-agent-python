@@ -99,3 +99,10 @@ class Orchestrator:
             return {"error": "Сессия не найдена"}
 
         return self.active_session[session_id].get_status()
+
+    def close_session(self, session_id: str) -> bool:
+        """Закрывает сессию"""
+        if session_id in self.active_session:
+            self.active_session[session_id].status = "closed"
+            return True
+        return False

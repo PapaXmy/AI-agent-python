@@ -1,7 +1,7 @@
 import logging
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from agents.developer_agent import DeveloperAgent
 from agents.planer_agent import PlannerAgent
@@ -78,14 +78,20 @@ class Orchestrator:
             )
 
         except Exception as e:
+            project_state.status = f"error_iteration_{project_state.iteration}"
             logger.error(
                 f"Ошибка итерации {project_state.iteration} сессии {session_id}: {e}"
             )
             logger.exception("")
 
-    def _execute_plan(self):
+    def _execute_plan(self, plan: List[Dict], project_state: ProjectState):
         """Выполняет план задач"""
-        pass
+        for task in plan:
+            logger.info(f"Обработка задачи {task['id']}")
+            result = self.developer.execute_task(task, project_state)
+            project_state.status = (
+                f"coding_task_{task['id']}_iteration_{project_state.iteration}"
+            )
 
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Возвращает статус сессии"""

@@ -16,13 +16,26 @@ class ProjectState:
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         self.iteration = 0
-        self.histiry: List[Dict]
+        self.history: List[Dict]
 
     def start_iteration(self, tech_spec: str):
         """Начинает итерацию"""
         self.iteration += 1
         self.status = f"iteration_{self.iteration}"
         self.updated_at = datetime.now()
+
+        self.history.append(
+            {
+                "iteration": self.iteration,
+                "tech_spec": tech_spec,
+                "timestamp": self.updated_at.isoformat(),
+                "status": "started",
+            }
+        )
+
+        tech_spec_path = self.session_path / f"tech_spec_iteration_{self.iteration}.txt"
+        with open(tech_spec_path, "w", encoding="utf-8") as f:
+            f.write(tech_spec)
 
     def update_plan(self, plan: List[Dict]):
         """Обновляет план проекта"""

@@ -40,10 +40,11 @@ class ProjectState:
     def update_plan(self, plan: List[Dict]):
         """Обновляет план проекта"""
         self.plan = plan
-        self.status = "planning_complete"
+        self.status = f"planning_complete_iteration_{self.iteration}"
 
-        with open(self.session_path / "plan.json", "w") as f:
-            json.dump(plan, f, indent=2)
+        plan_path = self.session_path / f"plan_iteration_{self.iteration}.json"
+        with open(plan_path, "w", encoding="utf-8") as f:
+            json.dump(plan, f, indent=2, ensure_ascii=False)
 
     def update_status(self, status: str):
         """Обновляет статус проекта"""

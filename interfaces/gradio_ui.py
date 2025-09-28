@@ -22,19 +22,29 @@ class AutoDevSuiteUI:
             gr.Markdown("# AutoDevSuite - AI - агент для генерации кода")
 
             with gr.Row():
-                with gr.Column():
-                    tech_spec_input = gr.Textbox(
-                        label="Техническое задание",
-                        placeholder="Опишите функционал для реализации...",
-                        lines=5,
-                    )
-                    start_btn = gr.Button("Начать сессию", variant="primary")
+                session_selector = gr.Dropdown(
+                    label="Выберите сессию для продолжения",
+                    choices=[],
+                    allow_custom_value=True,
+                    # placeholder="Оставте пустым для новой сессии...",
+                )
 
-                with gr.Column():
-                    session_id_display = gr.Textbox(
-                        label="ID сессии", interactive=False
-                    )
-                    status_display = gr.Textbox(label="Статус", interactive=False)
+                tech_spec_input = gr.Textbox(
+                    label="Техническое задание",
+                    placeholder="Опишите функционал для реализации...",
+                    lines=5,
+                )
+
+                with gr.Row():
+
+                    start_btn = gr.Button("Начать сессию", variant="primary")
+                    continue_btn = gr.Button("Продолжит сессию", variant="secondary")
+                    close_btn = gr.Button("Закрыть сессию", variant="stop")
+
+            with gr.Column():
+                session_id_display = gr.Textbox(label="ID сессии", interactive=False)
+                status_display = gr.Textbox(label="Статус", interactive=False)
+                iteration_display = gr.Textbox(label="Итерация", interactive=False)
 
             with gr.Row():
                 plan_display = gr.JSON(label="План разработки")

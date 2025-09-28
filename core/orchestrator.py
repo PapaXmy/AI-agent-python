@@ -38,38 +38,33 @@ class Orchestrator:
         project_state = ProjectState(session_id, session_path)
         self.active_session[session_id] = project_state
 
-        # сохранение ТЗ в текстовый файл
-        FileManager.write_file_content(session_path / "tech_spec.txt", tech_spec)
-        project_state.update_status("planning")
+        project_state.start_iteration(tech_spec)
 
         try:
             # запуск планировщика
 
             plan = self.planner.generate_plan(tech_spec)
             project_state.update_plan(plan)
-            project_state.update_status("coding")
 
-            for task in plan:
-                logger.info(f"Обработка задачи {task['id']}")
-                result = self.developer.execute_task(task, project_state)
-                project_state.update_status(f"coding_task_{task['id']}")
+            self._execute_plan(plan, project_state)
 
-            project_state.update_status("completed")
+            project_state.complete_iteration()
             logger.info(f"Сессия {session_id} завершена")
 
         except Exception as e:
-            project_state.update_status(f"error: {str(e)}")
+            project_state.status = f"Ошибка: {str(e)}"
+            logger.error(f"Ошибка в сессии {session_id}: {e}")
             logger.exception("")
-            logger.error(f"Ошибка сессии {session_id}: {e}")
 
         return session_id
 
-        # раздаем задачи для разработчика
-        developer = DeveloperAgent()
-        for task in plan:
-            developer.execute_task(task, project_state)
+    def continue_session(self):
+        """Продолжает существующую сессию с нвой итерацией"""
+        pass
 
-        return session_id
+    def _execute_plan(self):
+        """Выполняет план задач"""
+        pass
 
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Возвращает статус сессии"""

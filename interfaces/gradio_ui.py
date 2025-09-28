@@ -1,6 +1,8 @@
 import logging
-import gradio as gr
 from pathlib import Path
+
+import gradio as gr
+
 from core.orchestrator import Orchestrator
 from utils.logger_setup import setup_logging
 
@@ -16,7 +18,7 @@ class AutoDevSuiteUI:
 
     def setup_ui(self):
         """Настраивает интерфейс Gradio"""
-        with gr.Blocks(title="AutoDevSuite", theme=gr.theme.Soft()) as self.demo:
+        with gr.Blocks(title="AutoDevSuite", theme="soft") as self.demo:
             gr.Markdown("# AutoDevSuite - AI - агент для генерации кода")
 
             with gr.Row():

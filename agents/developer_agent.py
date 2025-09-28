@@ -38,9 +38,9 @@ class DeveloperAgent(BaseAgent):
         {project_context}
         
         В своем ответе ты должен указать ТОЛЬКО код, который нужно изменить, в формате:
-        START_FILENAME: {путь_к_файлу}
-        {код файла целиком}
-        END_FILENAME: {путь_к_файлу}
+        START_FILENAME: путь к файлу
+        код файла целиком
+        END_FILENAME: путь к файлу
         
         Если файл новый, создай его. Если изменяешь существующий, предоставь
         ПОЛНЫЙ код файла с изменениями."""
@@ -53,15 +53,15 @@ class DeveloperAgent(BaseAgent):
         llm = ChatOpenAI(
             model="gpt-4.1",
             temperature=0.1,
-            openai_api_key=settings.openai_api_key,
-            openai_api_base=settings.openai_api_base,
+            api_key=settings.api_key,
+            base_url=settings.base_url,
         )
 
         response = llm.invoke(
             prompt.format(
                 task_description=task["description"],
                 project_context=project_context,
-                rag_contex=rag_context,
+                rag_context=rag_context,
             )
         )
 

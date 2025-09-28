@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
-    openai_api_key: str = ""
-    openai_api_base: str = ""
+    api_key: str = ""
+    base_url: str = ""
     chroma_db_path: str = "./chroma_db"
 
     embeddings_provider: str = "local"

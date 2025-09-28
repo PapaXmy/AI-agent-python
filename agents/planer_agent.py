@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Dict, List
 
-from lanchain.prompts import PromptTemplate
+from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 
 from agents.base_agent import BaseAgent
@@ -33,8 +33,8 @@ class PlannerAgent(BaseAgent):
         llm = ChatOpenAI(
             model="gpt-4.1",
             temperature=0.1,
-            openai_api_key=settings.openai_api_key,
-            openai_base_api=settings.openai_api_base,
+            api_key=settings.api_key,
+            base_url=settings.base_url,
         )
 
         response = llm.invoke(prompt.format(tech_spec=tech_spec))

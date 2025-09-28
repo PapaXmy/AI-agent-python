@@ -5,7 +5,8 @@ from typing import Any, Dict, List, Optional
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from loaders_mmanager import LoadersManager
+
+from utils.loaders_mmanager import LoadersManager
 
 from .config import settings
 from .embeddings import get_embeddings

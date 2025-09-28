@@ -7,4 +7,5 @@ docs/
 .gradio
 logs
 temp_uploads
+projects/
 .env

@@ -27,6 +27,7 @@ class FileManager:
             logger.info(f"Файл записан: {file_path}")
         except Exception as e:
             logger.error(f"Ошибка записи файла {file_path}: {e}")
+            logger.exception("")
 
     @staticmethod
     def get_project_structure(project_path: Path) -> str:

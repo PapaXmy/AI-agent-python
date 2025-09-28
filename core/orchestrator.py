@@ -1,7 +1,7 @@
 import logging
 import uuid
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from agents.developer_agent import DeveloperAgent
 from agents.planer_agent import PlannerAgent
@@ -13,15 +13,24 @@ logger = logging.getLogger(__name__)
 
 
 class Orchestrator:
+    """Оркестратор для агентов"""
+
     def __init__(self):
         self.active_session: Dict[str, ProjectState] = {}
         self.planner = PlannerAgent()
         self.developer = DeveloperAgent()
         logger.info("Оркестратор инициализирован")
 
-    def start_new_session(self, tech_spec: str) -> str:
-        """Создает новую сессию и возвращает ее ID"""
-        session_id = str(uuid.uuid4())
+    def start_new_session(self, tech_spec: str, session_id: str) -> str:
+        """Создает новую или продорлжает существующую сессию"""
+        if session_id is not None and session_id in self.active_session:
+            return self.continue_session(session_id, tech_spec)
+        else:
+            return self._create_new_session(tech_spec, session_id)
+
+    def _create_new_session(self, tech_spec: str, session_id: str) -> str:
+        """Создает новую cессию"""
+        # session_id = str(uuid.uuid4())
         session_path = Path(f"./projects/{session_id}")
         session_path.mkdir(parents=True, exist_ok=True)
 

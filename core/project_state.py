@@ -18,6 +18,12 @@ class ProjectState:
         self.iteration = 0
         self.histiry: List[Dict]
 
+    def start_iteration(self, tech_spec: str):
+        """Начинает итерацию"""
+        self.iteration += 1
+        self.status = f"iteration_{self.iteration}"
+        self.updated_at = datetime.now()
+
     def update_plan(self, plan: List[Dict]):
         """Обновляет план проекта"""
         self.plan = plan

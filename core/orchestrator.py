@@ -100,6 +100,21 @@ class Orchestrator:
 
         return self.active_session[session_id].get_status()
 
+    def get_active_session(self, project_state: ProjectState) -> List[Dict[str, Any]]:
+        """Возвращает список активных сессий"""
+        sessions = []
+        for session_id in self.active_session.items():
+            sessions.append(
+                {
+                    "session_id": session_id,
+                    "status": project_state.status,
+                    "iteration": project_state.iteration,
+                    "created_at": project_state.created_at.isoformat(),
+                    "updated_at": project_state.updated_at.isoformat(),
+                }
+            )
+        return sessions
+
     def close_session(self, session_id: str) -> bool:
         """Закрывает сессию"""
         if session_id in self.active_session:

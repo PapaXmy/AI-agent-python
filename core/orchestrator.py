@@ -84,6 +84,8 @@ class Orchestrator:
             )
             logger.exception("")
 
+        return session_id
+
     def _execute_plan(self, plan: List[Dict], project_state: ProjectState):
         """Выполняет план задач"""
         for task in plan:

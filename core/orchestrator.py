@@ -58,9 +58,30 @@ class Orchestrator:
 
         return session_id
 
-    def continue_session(self):
+    def continue_session(self, session_id: str, tech_spec: str) -> str:
         """Продолжает существующую сессию с нвой итерацией"""
-        pass
+        if session_id not in self.active_session:
+            raise ValueError(f"Сессия {session_id} не найдена")
+
+        project_state = self.active_session[session_id]
+        project_state.start_iteration(tech_spec)
+
+        try:
+            plan = self.planner.generate_plan(tech_spec)
+            project_state.update_plan(plan)
+
+            self._execute_plan(plan, project_state)
+
+            project_state.complete_iteration()
+            logger.info(
+                f"Сессия {session_id} обновлена, итерация {project_state.iteration}"
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Ошибка итерации {project_state.iteration} сессии {session_id}: {e}"
+            )
+            logger.exception("")
 
     def _execute_plan(self):
         """Выполняет план задач"""

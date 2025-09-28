@@ -65,10 +65,14 @@ class ProjectState:
         return {
             "session_id": self.session_id,
             "status": self.status,
+            "iteration": self.iteration,
             "plan": self.plan,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
             "files": [
                 str(f.relative_to(self.session_path))
                 for f in self.session_path.rglob("*")
                 if f.is_file()
             ],
+            "history": self.history,
         }

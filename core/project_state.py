@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
@@ -12,6 +13,10 @@ class ProjectState:
         self.session_path = session_path
         self.plan: List[Dict] = []
         self.status = "created"
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
+        self.iteration = 0
+        self.histiry: List[Dict]
 
     def update_plan(self, plan: List[Dict]):
         """Обновляет план проекта"""

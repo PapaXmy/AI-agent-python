@@ -46,6 +46,16 @@ class ProjectState:
         with open(plan_path, "w", encoding="utf-8") as f:
             json.dump(plan, f, indent=2, ensure_ascii=False)
 
+    def complete_iteration(self):
+        """Завершает итерацию"""
+        self.status = f"completed_iteration_{self.iteration}"
+        self.updated_at = datetime.now()
+
+        for item in self.history:
+            if item["iteration"] == self.iteration and item["status"] == "started":
+                item["status"] = "completed"
+                item["completed_at"] = datetime.now().isoformat()
+
     def update_status(self, status: str):
         """Обновляет статус проекта"""
         self.status = status

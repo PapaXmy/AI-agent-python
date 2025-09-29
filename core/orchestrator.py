@@ -21,16 +21,18 @@ class Orchestrator:
         self.developer = DeveloperAgent()
         logger.info("Оркестратор инициализирован")
 
-    def start_new_session(self, tech_spec: str, session_id: str) -> str:
+    def start_new_session(
+        self, tech_spec: str, session_id: Optional[str] = None
+    ) -> str:
         """Создает новую или продорлжает существующую сессию"""
         if session_id is not None and session_id in self.active_session:
             return self.continue_session(session_id, tech_spec)
         else:
-            return self._create_new_session(tech_spec, session_id)
+            return self._create_new_session(tech_spec)
 
-    def _create_new_session(self, tech_spec: str, session_id: str) -> str:
+    def _create_new_session(self, tech_spec: str) -> str:
         """Создает новую cессию"""
-        # session_id = str(uuid.uuid4())
+        session_id = str(uuid.uuid4())
         session_path = Path(f"./projects/{session_id}")
         session_path.mkdir(parents=True, exist_ok=True)
 

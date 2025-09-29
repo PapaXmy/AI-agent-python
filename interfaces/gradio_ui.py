@@ -93,8 +93,35 @@ class AutoDevSuiteUI:
                 outputs=[session_id_display, status_display, session_selector],
             )
 
-    def continue_session(self):
+    def continue_session(self, session_selector, tech_spec):
         """Продолжает существующую сессию"""
+        if not tech_spec.strip():
+            return "", "Ошибка: ТЗ не может быть пустым", "", None, None, None
+
+        session_id = self.extract_session_id(session_selector)
+        if not session_id:
+            return "", "Ошибка выберите сессию для продолжения", "", None, None, None
+
+        try:
+            session_id = self.orchestrator.continue_session(session_id, tech_spec)
+            status = self.orchestrator.get_session_status(session_id)
+
+            return (
+                session_id,
+                status.get("status", "unknown"),
+                f'Итерация {status.get("iteration", 0)}',
+                status.get("paln", []),
+                status.get("history", []),
+                self.get_session_files(session_id),
+            )
+
+        except Exception as e:
+            logger.error(f"Ошибка продолжения сессии: {e}")
+            logger.exception("")
+            return "", f"Ошибка: {str(e)}", "", None, None, None
+
+    def extract_session_id(self, session_selector):
+        """Извлекает session_id из значения селектора"""
         pass
 
     def close_session(self):

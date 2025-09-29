@@ -84,6 +84,7 @@ class AutoDevSuiteUI:
                     plan_display,
                     history_display,
                     files_display,
+                    iteration_display,
                 ],
             )
             close_btn.click(
@@ -103,7 +104,7 @@ class AutoDevSuiteUI:
     def start_session(self, tech_spec):
         """Запускает новую сессию"""
         if not tech_spec.strip():
-            return "", "Ошибка: ТЗ не может быть пустым", None, None
+            return "", "Ошибка: ТЗ не может быть пустым", None, None, None
 
         try:
             session_id = self.orchestrator.start_new_session(tech_spec)
@@ -112,13 +113,16 @@ class AutoDevSuiteUI:
             return (
                 session_id,
                 status.get("status", "unknow"),
+                f'Итерация {status.get("iteration", 0)}',
                 status.get("plan", []),
+                status.get("history", []),
                 self.get_session_files(session_id),
             )
 
         except Exception as e:
             logger.error(f"Ошибка запуска сессии: {e}")
-            return "", f"Ошибка: {str(e)}", None, None
+            logger.exception("")
+            return "", f"Ошибка: {str(e)}", None, None, None
 
     def get_session_files(self, session_id):
         """Возвращает файлы файлы сессии"""

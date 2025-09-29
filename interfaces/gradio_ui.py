@@ -124,9 +124,24 @@ class AutoDevSuiteUI:
         """Извлекает session_id из значения селектора"""
         pass
 
-    def close_session(self):
+    def close_session(self, session_selector):
         """Закрывает сессию"""
-        pass
+        session_id = self.extract_session_id(session_selector)
+        if not session_id:
+            return "", "Ошибка выберите сессию", ""
+
+        try:
+            success = self.orchestrator.close_session(session_id)
+
+            if success:
+                return "", f"Сессия {session_id} закрыта", ""
+            else:
+                return "", f"Ошибка закрытия сессии {session_id}", ""
+
+        except Exception as e:
+            logger.error(f"Ошибка закрытия сессии {session_id}")
+            logger.exception("")
+            return "", f"Ошибка: {str(e)}", ""
 
     def start_session(self, tech_spec):
         """Запускает новую сессию"""

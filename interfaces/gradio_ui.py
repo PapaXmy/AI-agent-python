@@ -174,14 +174,22 @@ class AutoDevSuiteUI:
             return None
 
         session_path = Path(f"./projects/{session_id}")
-        return [str(f) for f in session_path.rglob("*") if f.is_file()]
 
-    def run(self):
-        """Запуск приложенгия"""
+        if session_path.exists():
+            return [str(f) for f in session_path.rglob("*") if f.is_file()]
+        return None
+
+    def run(self, server_name="0.0.0.0", server_port=7860, share=False):
+        """Запуск приложения"""
         logger.info("Запуск AutoDevSuite")
-        self.demo.launch(server_name="0.0.0.0", server_port=7860)
+        self.demo.launch(
+            server_name=server_name,
+            server_port=server_port,
+            share=share,
+            show_error=True,
+        )
 
 
-if __name__ == "__main__":
-    app = AutoDevSuiteUI()
-    app.run
+# if __name__ == "__main__":
+#     app = AutoDevSuiteUI()
+#     app.run

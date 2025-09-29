@@ -120,9 +120,11 @@ class AutoDevSuiteUI:
             logger.exception("")
             return "", f"Ошибка: {str(e)}", "", None, None, None
 
-    def extract_session_id(self, session_selector):
+    def extract_session_id(self, session_selector_value):
         """Извлекает session_id из значения селектора"""
-        pass
+        if session_selector_value:
+            return session_selector_value.split(" ")[0]
+        return None
 
     def close_session(self, session_selector):
         """Закрывает сессию"""

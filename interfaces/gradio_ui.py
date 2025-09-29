@@ -40,7 +40,7 @@ class AutoDevSuiteUI:
 
                         start_btn = gr.Button("Начать сессию", variant="primary")
                         continue_btn = gr.Button(
-                            "Продолжит сессию", variant="secondary"
+                            "Продолжить сессию", variant="secondary"
                         )
                         close_btn = gr.Button("Закрыть сессию", variant="stop")
 
@@ -75,6 +75,30 @@ class AutoDevSuiteUI:
                     files_display,
                 ],
             )
+            continue_btn.click(
+                self.continue_session,
+                inputs=[session_selector, tech_spec_input],
+                outputs=[
+                    session_id_display,
+                    status_display,
+                    plan_display,
+                    history_display,
+                    files_display,
+                ],
+            )
+            close_btn.click(
+                self.close_session,
+                inputs=[session_selector],
+                outputs=[session_id_display, status_display, session_selector],
+            )
+
+    def continue_session(self):
+        """Продолжает существующую сессию"""
+        pass
+
+    def close_session(self):
+        """Закрывает сессию"""
+        pass
 
     def start_session(self, tech_spec):
         """Запускает новую сессию"""

@@ -24,19 +24,24 @@ class DeveloperAgent(BaseAgent):
         logger.info(f"Выполнение задачи: {task['id']} - {task['description']}")
 
         project_context = self._get_project_context(project_state.session_path)
-        rag_context = self.get_rag_context(task["description"])
+        rag_context = self.get_rag_context(f'Разработка {task["description"]}')
 
-        prompt_template = """Ты - senior Python-разработчик. Выполни задачу. У
+        prompt_template = """Ты - senior Python-разработчик. Выполни задачу в рамках итеративной разработки. У
         тебя есть доступ к текущим файлам проекта.
         
         КОНТЕКСТ ИЗ ДОКУМЕНТАЦИИ:
         {rag_context}
 
-        ЗАДАЧА: {task_description}
+        ЗАДАЧА: {task['description']}
         
         ТЕКУЩИЕ ФАЙЛЫ ПРОЕКТА:
         {project_context}
         
+        Важно: Это итеративная разработка. Файлы уже существуют.
+        - если файл существует, модифицируй его содержимое
+        - если файл новый, создай его
+        - сохраняй работоспособность существующего кода
+
         В своем ответе ты должен указать ТОЛЬКО код, который нужно изменить, в формате:
         START_FILENAME: путь к файлу
         код файла целиком

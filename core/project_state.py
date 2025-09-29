@@ -16,7 +16,7 @@ class ProjectState:
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         self.iteration = 0
-        self.history: List[Dict]
+        self.history: List[Dict] = []
 
     def start_iteration(self, tech_spec: str):
         """Начинает итерацию"""

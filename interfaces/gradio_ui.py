@@ -71,7 +71,9 @@ class AutoDevSuiteUI:
                 outputs=[
                     session_id_display,
                     status_display,
+                    iteration_display,
                     plan_display,
+                    history_display,
                     files_display,
                 ],
             )
@@ -81,10 +83,10 @@ class AutoDevSuiteUI:
                 outputs=[
                     session_id_display,
                     status_display,
+                    iteration_display,
                     plan_display,
                     history_display,
                     files_display,
-                    iteration_display,
                 ],
             )
             close_btn.click(

@@ -32,7 +32,7 @@ class DeveloperAgent(BaseAgent):
         КОНТЕКСТ ИЗ ДОКУМЕНТАЦИИ:
         {rag_context}
 
-        ЗАДАЧА: {task['description']}
+        ЗАДАЧА: {task_description}
         
         ТЕКУЩИЕ ФАЙЛЫ ПРОЕКТА:
         {project_context}

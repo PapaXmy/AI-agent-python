@@ -51,18 +51,24 @@ class ProjectState:
         self.status = f"iteration_{self.iteration}"
         self.updated_at = datetime.now()
 
+        iteration_path = self.iteration_path / f"iteration_{self.iteration}"
+        iteration_path.mkdir(exist_ok=True)
+
+        tech_spec_path = iteration_path / "tech_spec.txt"
+        with open(tech_spec_path, "w", encoding="utf-8") as f:
+            f.write(tech_spec)
+
         self.history.append(
             {
                 "iteration": self.iteration,
                 "tech_spec": tech_spec,
                 "timestamp": self.updated_at.isoformat(),
                 "status": "started",
+                "iteration_path": str(iteration_path.relative_to(self.project_path)),
             }
         )
 
-        tech_spec_path = self.session_path / f"tech_spec_iteration_{self.iteration}.txt"
-        with open(tech_spec_path, "w", encoding="utf-8") as f:
-            f.write(tech_spec)
+        self._save_metadata()
 
     def update_plan(self, plan: List[Dict]):
         """Обновляет план проекта"""

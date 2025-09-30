@@ -75,7 +75,9 @@ class ProjectState:
         self.plan = plan
         self.status = f"planning_complete_iteration_{self.iteration}"
 
-        plan_path = self.session_path / f"plan_iteration_{self.iteration}.json"
+        iteration_path = self.iteration_path / f"iteration_{self.iteration}"
+        plan_path = iteration_path / "plan.json"
+
         with open(plan_path, "w", encoding="utf-8") as f:
             json.dump(plan, f, indent=2, ensure_ascii=False)
 

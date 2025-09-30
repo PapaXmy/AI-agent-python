@@ -101,6 +101,11 @@ class AutoDevSuiteUI:
         """Обновление сессий"""
         pass
 
+    def _get_project_choises(self):
+        """Возвращает список проектов для выбора"""
+        projects = self.orchestrator.list_projects()
+        return [f'{p["project_name"]} (итерация {p["iteration"]})' for p in projects]
+
     def continue_session(self, session_selector, tech_spec):
         """Продолжает существующую сессию"""
         if not tech_spec.strip():

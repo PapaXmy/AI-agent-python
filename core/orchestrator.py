@@ -125,3 +125,20 @@ class Orchestrator:
             self.active_session[session_id].status = "closed"
             return True
         return False
+
+    def list_projects(self) -> List[Dict[str, Any]]:
+        """Возвращает список всех проектов"""
+        projects = []
+
+        for project_name, project in self.active_session.items():
+            projects.append(
+                {
+                    "project_name": project_name,
+                    "status": project.status,
+                    "iteration": project.iteration,
+                    "created_at": project.created_at.isoformat(),
+                    "updated_at": project.updated_at.isoformat(),
+                }
+            )
+
+        return projects

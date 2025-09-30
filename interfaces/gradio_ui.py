@@ -99,7 +99,8 @@ class AutoDevSuiteUI:
 
     def refresh_sessions(self):
         """Обновление сессий"""
-        pass
+        choices = self._get_project_choises()
+        return gr.Dropdown(choices=choices, value=choices[0] if choices else None)
 
     def _get_project_choises(self):
         """Возвращает список проектов для выбора"""

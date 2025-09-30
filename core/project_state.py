@@ -8,15 +8,42 @@ logger = logging.getLogger(__name__)
 
 
 class ProjectState:
-    def __init__(self, session_id: str, session_path: Path):
-        self.session_id = session_id
-        self.session_path = session_path
+    def __init__(self, project_name: str, project_path: Path):
+        self.project_name = project_name
+        self.project_path = project_path
+        self.hidden_dir_path = project_path / ".devsuit"
+        self.iteration_path = self.hidden_dir_path / "iteration"
+        self.meta_path = self.hidden_dir_path / "poject_meta.json"
+
         self.plan: List[Dict] = []
         self.status = "created"
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
         self.iteration = 0
         self.history: List[Dict] = []
+
+        self._initialize_project_structure()
+
+    def _initialize_project_structure(self):
+        """Создает структуру папок для проекта"""
+        self.hidden_dir_path.mkdir(parents=True, exist_ok=True)
+        self.iteration_path.mkdir(parents=True, exist_ok=True)
+
+        if not self.meta_path.exists():
+            self._save_metadata()
+
+    def _save_metadata(self):
+        """Сохраняет метаданные проекта"""
+        metadata = {
+            "project_name": self.project_name,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "total_iteratios": self.iteration,
+            "status": self.status,
+        }
+
+        with open(self.meta_path, "w", encoding="utf-8") as f:
+            json.dump(metadata, f, indent=2, ensure_ascii=False)
 
     def start_iteration(self, tech_spec: str):
         """Начинает итерацию"""

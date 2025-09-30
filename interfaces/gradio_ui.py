@@ -29,6 +29,7 @@ class AutoDevSuiteUI:
                         allow_custom_value=True,
                         # placeholder="Оставте пустым для новой сессии...",
                     )
+                    refresh_btn = gr.Button("Обновить список", size="sm")
 
                     tech_spec_input = gr.Textbox(
                         label="Техническое задание",
@@ -65,6 +66,7 @@ class AutoDevSuiteUI:
                 files_display = gr.File(label="Файлы проекта", file_count="multiple")
 
             # обработчик событий
+            refresh_btn.click(self.refresh_sessions, outputs=session_selector)
             start_btn.click(
                 self.start_session,
                 inputs=tech_spec_input,
@@ -94,6 +96,10 @@ class AutoDevSuiteUI:
                 inputs=[session_selector],
                 outputs=[session_id_display, status_display, session_selector],
             )
+
+    def refresh_sessions(self):
+        """Обновление сессий"""
+        pass
 
     def continue_session(self, session_selector, tech_spec):
         """Продолжает существующую сессию"""

@@ -141,16 +141,17 @@ class ProjectState:
     def get_status(self):
         """Возвращает текущий статус проекта"""
         return {
-            "session_id": self.session_id,
+            "session_id": self.project_path,
             "status": self.status,
             "iteration": self.iteration,
             "plan": self.plan,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "files": [
-                str(f.relative_to(self.session_path))
-                for f in self.session_path.rglob("*")
+            "current_files": [
+                str(f.relative_to(self.project_path))
+                for f in self.project_path.rglob("*")
                 if f.is_file()
             ],
             "history": self.history,
+            "project_path": str(self.project_path),
         }

@@ -112,6 +112,28 @@ class ProjectState:
                 item["status"] = "completed"
                 item["completed_at"] = datetime.now().isoformat()
 
+    def get_corrent_files_context(self):
+        """Возвращает контекст текущих файлов проекта"""
+        context = []
+        for file in self.project_path.rglob("*"):
+            if file.is_file() and file.suffix in [
+                ".py",
+                ".txt",
+                ".md",
+                ".json",
+                "yaml",
+                "yml",
+            ]:
+                try:
+                    content = file.read_text(encoding="utf-8")
+                    rel_path = file.relative_to(self.project_path)
+                    context.append(f"{rel_path}:\n{content}\n")
+                except Exception as e:
+                    logger.error(f"Ошибка чтения файла {file}: {e}")
+                    logger.exception("")
+
+        return "\n".join(context) if context else "Файлы проекта отсутствуют"
+
     def update_status(self, status: str):
         """Обновляет статус проекта"""
         self.status = status

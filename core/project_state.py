@@ -81,6 +81,27 @@ class ProjectState:
         with open(plan_path, "w", encoding="utf-8") as f:
             json.dump(plan, f, indent=2, ensure_ascii=False)
 
+    def save_iteration_files(self, files_changes: Dict[str, str]):
+        """Сохраняет файлы итерации и бновляет текущее состояние файлов проекта"""
+        iteration_path = self.iteration_path / f"iteration_{self.iteration}"
+        generated_files_path = iteration_path / "generated_files"
+        generated_files_path.mkdir(exist_ok=True)
+
+        # сохранение файлов
+        for file_path, content in files_changes.items():
+            file_full_path = generated_files_path / file_path
+            file_full_path.mkdir(parents=True, exist_ok=True)
+
+            with open(file_full_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+            # обновление текущих файлов проекта
+            current_file_path = self.project_path
+            current_file_path.mkdir(parents=True, exist_ok=True)
+
+            with open(current_file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
     def complete_iteration(self):
         """Завершает итерацию"""
         self.status = f"completed_iteration_{self.iteration}"

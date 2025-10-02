@@ -170,12 +170,12 @@ class Orchestrator:
 
         return files_changes
 
-    def get_session_status(self, session_id: str) -> Dict[str, Any]:
+    def get_project_status(self, project_name: str) -> Dict[str, Any]:
         """Возвращает статус сессии"""
-        if session_id not in self.active_session:
+        if project_name not in self.active_projects:
             return {"error": "Сессия не найдена"}
 
-        return self.active_session[session_id].get_status()
+        return self.active_projects[project_name].get_status()
 
     def get_active_session(self, project_state: ProjectState) -> List[Dict[str, Any]]:
         """Возвращает список активных сессий"""
@@ -192,10 +192,10 @@ class Orchestrator:
             )
         return sessions
 
-    def close_session(self, session_id: str) -> bool:
-        """Закрывает сессию"""
-        if session_id in self.active_session:
-            self.active_session[session_id].status = "closed"
+    def close_session(self, project_name: str) -> bool:
+        """Закрывает сессию (и убирает из активных)"""
+        if project_name in self.active_projects:
+            del self.active_projects[project_name]
             return True
         return False
 
@@ -203,7 +203,7 @@ class Orchestrator:
         """Возвращает список всех проектов"""
         projects = []
 
-        for project_name, project in self.active_session.items():
+        for project_name, project in self.active_projects.items():
             projects.append(
                 {
                     "project_name": project_name,

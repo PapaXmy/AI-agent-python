@@ -151,14 +151,20 @@ class Orchestrator:
 
         return session_id
 
-    def _execute_plan(self, plan: List[Dict], project_state: ProjectState):
-        """Выполняет план задач"""
+    def _execute_plan(self, plan: List[Dict], project: ProjectState) -> Dict[str, str]:
+        """Выполняет план задач и возвращает измененя файлов"""
+        files_changes = {}
         for task in plan:
             logger.info(f"Обработка задачи {task['id']}")
-            result = self.developer.execute_task(task, project_state)
-            project_state.status = (
-                f"coding_task_{task['id']}_iteration_{project_state.iteration}"
-            )
+            result = self.developer.execute_task(task, project)
+
+            # собираем изменения файлов
+            if "changes" in result:
+                files_changes.update(result["changes"])
+
+            project.status = f"coding_task_{task['id']}_iteration_{project.iteration}"
+
+        return files_changes
 
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Возвращает статус сессии"""

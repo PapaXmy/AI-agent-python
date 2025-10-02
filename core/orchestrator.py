@@ -1,4 +1,5 @@
 import logging
+import re
 import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -62,8 +63,11 @@ class Orchestrator:
         project = self.active_projects[project_name]
         return self._execute_iteration(project, tech_spec)
 
-    def _normalized_project_name(self, name):
-        pass
+    def _normalized_project_name(self, name: str) -> str:
+        """Нормализует название проекта (убирает спецсимволы)"""
+        normalized = re.sub(r"[^\w\s-]", "", name)
+        normalized = re.sub(r"[-\s]+", "_", normalized)
+        return normalized.strip("-_").lower()
 
     def _execute_iteration(self, project: ProjectState, tech_spec: str) -> str:
         """Выполняет итерацию в проекте"""

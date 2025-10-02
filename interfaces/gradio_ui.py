@@ -21,20 +21,21 @@ class AutoDevSuiteUI:
         with gr.Blocks(title="AutoDevSuite", theme="soft") as self.demo:
             gr.Markdown("# AutoDevSuite - Управление проектами")
 
-        with gr.Row():
-            with gr.Group():
-                gr.Markdown("Создать новый проект")
-                new_project_name = gr.Textbox(
-                    label="Название пректа",
-                    info="Используйте английские буквы, цифры и подчеркивания",
-                )
-                new_tech_spec = gr.Textbox(
-                    label="Техническое задание",
-                    placeholder="Опишите функционал для реализации",
-                    lines=4,
-                )
+            with gr.Row():
+                with gr.Column(scale=2):
+                    with gr.Group():
+                        gr.Markdown("Создать новый проект")
+                        new_project_name = gr.Textbox(
+                            label="Название пректа",
+                            info="Используйте английские буквы, цифры и подчеркивания",
+                        )
+                        new_tech_spec = gr.Textbox(
+                            label="Техническое задание",
+                            placeholder="Опишите функционал для реализации",
+                            lines=4,
+                        )
 
-                start_btn = gr.Button("Создать проект", variant="primary")
+                        start_btn = gr.Button("Создать проект", variant="primary")
 
                 with gr.Column():
                     session_id_display = gr.Textbox(

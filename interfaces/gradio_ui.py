@@ -36,7 +36,7 @@ class AutoDevSuiteUI:
                             lines=4,
                         )
 
-                        start_btn = gr.Button("Создать проект", variant="primary")
+                        create_btn = gr.Button("Создать проект", variant="primary")
 
                 with gr.Column(scale=1):
                     # управление существующими проектами
@@ -48,7 +48,7 @@ class AutoDevSuiteUI:
                             allow_custom_value=False,
                         )
                         refresh_btn = gr.Button("Обновить список", size="sm")
-                        conntinue_btn = gr.Button(
+                        continue_btn = gr.Button(
                             "Доработать проект", variant="secondary"
                         )
 
@@ -80,36 +80,49 @@ class AutoDevSuiteUI:
             project_files = gr.File(label="Файлы проекта", file_count="multiple")
 
             # обработчик событий
-            refresh_btn.click(self.refresh_sessions, outputs=session_selector)
-            start_btn.click(
-                self.start_session,
-                inputs=tech_spec_input,
-                outputs=[
-                    session_id_display,
-                    status_display,
-                    iteration_display,
-                    plan_display,
-                    history_display,
-                    files_display,
-                ],
+            refresh_btn.click(self.refresh_sessions, outputs=project_selector)
+            create_btn.click(
+                self.create_project,
+                inputs=[new_project_name, new_tech_spec],
+                outputs=[project_status, project_history, project_files],
             )
             continue_btn.click(
                 self.continue_session,
-                inputs=[session_selector, tech_spec_input],
+                inputs=[project_selector, project_history, project_files],
+                outputs=[project_status, project_history, project_files],
+            )
+            project_selector.change(
+                self.load_project_info,
+                inputs=project_selector,
                 outputs=[
-                    session_id_display,
-                    status_display,
-                    iteration_display,
-                    plan_display,
-                    history_display,
-                    files_display,
+                    project_status,
+                    project_status,
+                    project_files,
+                    iteration_selector,
                 ],
             )
-            close_btn.click(
-                self.close_session,
-                inputs=[session_selector],
-                outputs=[session_id_display, status_display, session_selector],
+            file_version.change(
+                self.toggle_file_version,
+                inputs=[file_version, project_selector],
+                outputs=[iteration_selector, project_files],
             )
+            iteration_selector.change(
+                self.load_iteration_files,
+                inputs=[project_selector, iteration_selector],
+                outputs=project_files,
+            )
+
+    def create_project(self):
+        pass
+
+    def load_project_info(self):
+        pass
+
+    def toggle_file_version(self):
+        pass
+
+    def load_iteration_files(self):
+        pass
 
     def refresh_sessions(self):
         """Обновление сессий"""

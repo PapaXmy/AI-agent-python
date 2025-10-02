@@ -28,7 +28,15 @@ class Orchestrator:
 
     def _load_existing_projects(self):
         """Загружает существующие проекты при старте"""
-        pass
+        for project_dir in self.projects_root.iterdir():
+            if project_dir.is_dir():
+                project = ProjectState.load_project(
+                    project_dir.name, self.projects_root
+                )
+
+                if project:
+                    self.active_projects[project.project_name] = project
+                    logger.info(f"Загружен проект: {project.project_name}")
 
     def start_new_session(
         self, tech_spec: str, session_id: Optional[str] = None

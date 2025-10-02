@@ -19,31 +19,22 @@ class AutoDevSuiteUI:
     def setup_ui(self):
         """Настраивает интерфейс Gradio"""
         with gr.Blocks(title="AutoDevSuite", theme="soft") as self.demo:
-            gr.Markdown("# AutoDevSuite - AI - агент для генерации кода")
+            gr.Markdown("# AutoDevSuite - Управление проектами")
 
-            with gr.Row():
-                with gr.Column():
-                    session_selector = gr.Dropdown(
-                        label="Выберите сессию для продолжения",
-                        choices=[],
-                        allow_custom_value=True,
-                        # placeholder="Оставте пустым для новой сессии...",
-                    )
-                    refresh_btn = gr.Button("Обновить список", size="sm")
+        with gr.Row():
+            with gr.Group():
+                gr.Markdown("Создать новый проект")
+                new_project_name = gr.Textbox(
+                    label="Название пректа",
+                    info="Используйте английские буквы, цифры и подчеркивания",
+                )
+                new_tech_spec = gr.Textbox(
+                    label="Техническое задание",
+                    placeholder="Опишите функционал для реализации",
+                    lines=4,
+                )
 
-                    tech_spec_input = gr.Textbox(
-                        label="Техническое задание",
-                        placeholder="Опишите функционал для реализации...",
-                        lines=5,
-                    )
-
-                    with gr.Row():
-
-                        start_btn = gr.Button("Начать сессию", variant="primary")
-                        continue_btn = gr.Button(
-                            "Продолжить сессию", variant="secondary"
-                        )
-                        close_btn = gr.Button("Закрыть сессию", variant="stop")
+                start_btn = gr.Button("Создать проект", variant="primary")
 
                 with gr.Column():
                     session_id_display = gr.Textbox(
@@ -105,7 +96,7 @@ class AutoDevSuiteUI:
     def _get_project_choises(self):
         """Возвращает список проектов для выбора"""
         projects = self.orchestrator.list_projects()
-        return [f'{p["project_name"]} (итерация {p["iteration"]})' for p in projects]
+        return [f"{p['project_name']} (итерация {p['iteration']})" for p in projects]
 
     def continue_session(self, session_selector, tech_spec):
         """Продолжает существующую сессию"""
@@ -123,7 +114,7 @@ class AutoDevSuiteUI:
             return (
                 session_id,
                 status.get("status", "unknown"),
-                f'Итерация {status.get("iteration", 0)}',
+                f"Итерация {status.get('iteration', 0)}",
                 status.get("paln", []),
                 status.get("history", []),
                 self.get_session_files(session_id),
@@ -171,7 +162,7 @@ class AutoDevSuiteUI:
             return (
                 session_id,
                 status.get("status", "unknow"),
-                f'Итерация {status.get("iteration", 0)}',
+                f"Итерация {status.get('iteration', 0)}",
                 status.get("plan", []),
                 status.get("history", []),
                 self.get_session_files(session_id),

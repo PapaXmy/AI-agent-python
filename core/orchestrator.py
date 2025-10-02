@@ -66,7 +66,32 @@ class Orchestrator:
         pass
 
     def _execute_iteration(self, project: ProjectState, tech_spec: str) -> str:
-        pass
+        """Выполняет итерацию в проекте"""
+        project.start_iteration(tech_spec)
+
+        try:
+            plan = self.planner.generate_plan(tech_spec)
+            project.update_plan(plan)
+
+            # выполнение задач
+            files_changes = self._execute_plan(plan, project)
+
+            project.save_iteration_files(files_changes)
+            project.complete_iteration()
+
+            logger.info(
+                f'Проект "{project.project_name}" обновлен в итерации {project.iteration}'
+            )
+
+        except Exception as e:
+            project.status = f"error_iteration_{project.iteration}: {str(e)}"
+            logger.error(
+                f"Ошибка в итерации {project.iteration} проекта {project.project_name}: {e}"
+            )
+            logger.exception("")
+            raise
+
+        return project.project_name
 
     def _create_new_session(self, tech_spec: str) -> str:
         """Создает новую cессию"""

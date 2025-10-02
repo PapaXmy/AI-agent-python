@@ -193,4 +193,24 @@ class ProjectState:
 
     def _load_history(self):
         "Загружает историю из папок итераций"
-        pass
+        self.history = []
+
+        for iteration_dir in self.iteration_path.iterdir():
+            if iteration_dir.is_dir() and iteration_dir.name.startswith("iteration_"):
+                iteration_num = int(iteration_dir.name.split("_")[1])
+                tech_spec_path = iteration_dir / "tech_spec.txt"
+                tech_spec = ""
+
+                if tech_spec_path.exists():
+                    tech_spec = tech_spec_path.read_text(encoding="utf-8")
+
+                self.history.append(
+                    {
+                        "iteration": iteration_num,
+                        "tech_spec": tech_spec,
+                        "iteration_path": str(
+                            iteration_dir.relative_to(self.project_path)
+                        ),
+                        "status": "completed",
+                    }
+                )

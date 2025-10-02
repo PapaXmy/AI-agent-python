@@ -15,11 +15,20 @@ logger = logging.getLogger(__name__)
 class Orchestrator:
     """Оркестратор для агентов"""
 
-    def __init__(self):
-        self.active_session: Dict[str, ProjectState] = {}
+    def __init__(self, projects_root: str = "./projects"):
+        self.projects_root = Path(projects_root)
+        self.projects_root.mkdir(parents=True, exist_ok=True)
+
+        self.active_projects: Dict[str, ProjectState] = {}
         self.planner = PlannerAgent()
         self.developer = DeveloperAgent()
+
+        self._load_existing_projects()
         logger.info("Оркестратор инициализирован")
+
+    def _load_existing_projects(self):
+        """Загружает существующие проекты при старте"""
+        pass
 
     def start_new_session(
         self, tech_spec: str, session_id: Optional[str] = None

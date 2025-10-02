@@ -37,12 +37,18 @@ class AutoDevSuiteUI:
 
                         start_btn = gr.Button("Создать проект", variant="primary")
 
-                with gr.Column():
-                    session_id_display = gr.Textbox(
-                        label="ID сессии", interactive=False
-                    )
-                    status_display = gr.Textbox(label="Статус", interactive=False)
-                    iteration_display = gr.Textbox(label="Итерация", interactive=False)
+                with gr.Column(scale=1):
+                    with gr.Group():
+                        gr.Markdown("Проекты")
+                        project_selector = gr.Dropdown(
+                            label="Выберите проект",
+                            choices=self._get_project_choises(),
+                            allow_custom_value=False,
+                        )
+                        refresh_btn = gr.Button("Обновить список", size="sm")
+                        conntinue_btn = gr.Button(
+                            "Доработать проект", variant="secondary"
+                        )
 
             with gr.Row():
                 with gr.Column():

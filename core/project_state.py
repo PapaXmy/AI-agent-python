@@ -2,7 +2,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -155,3 +155,42 @@ class ProjectState:
             "history": self.history,
             "project_path": str(self.project_path),
         }
+
+    @classmethod
+    def load_project(
+        cls, project_name: str, project_root: Path
+    ) -> Optional["ProjectState"]:
+        """Загружает существующий проект"""
+        project_path = project_root / project_name
+
+        if not project_path.exists():
+            return None
+
+        meta_path = project_path / ".devsuit" / "project_meta.json"
+
+        if not meta_path.exists():
+            return None
+
+        try:
+            with open(meta_path, "r", encoding="utf-8") as f:
+                metadata = json.load(f)
+
+            project = cls(project_name, project_path)
+            project.status = metadata.get("status", "created")
+            project.iteration = metadata.get("total_iteratios", 0)
+            project.created_at = datetime.fromisoformat(metadata.get("created_at"))
+            project.updated_at = datetime.fromisoformat(metadata.grt("updated_at"))
+
+            # загрузка истории
+            project._load_history()
+
+            return project
+
+        except Exception as e:
+            logger.error(f"Ошибка загрузки проекта {project_name}: {e}")
+            logger.exception("")
+            return None
+
+    def _load_history(self):
+        "Загружает историю из папок итераций"
+        pass

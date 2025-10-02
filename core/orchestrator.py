@@ -50,6 +50,18 @@ class Orchestrator:
 
         return self._execute_iteration(project, tech_spec)
 
+    def continue_project(self, project_name: str, tech_spec: str) -> str:
+        """Продолжает существующий проект"""
+        if project_name not in self.active_projects:
+            project = ProjectState.load_project(project_name, self.projects_root)
+
+            if not project:
+                raise ValueError(f'Проект "{project_name}" не найден')
+            self.active_projects[project_name] = project
+
+        project = self.active_projects[project_name]
+        return self._execute_iteration(project, tech_spec)
+
     def _normalized_project_name(self, name):
         pass
 

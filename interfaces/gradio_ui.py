@@ -134,35 +134,28 @@ class AutoDevSuiteUI:
         projects = self.orchestrator.list_projects()
         return [f"{p['project_name']} (итерация {p['iteration']})" for p in projects]
 
-    def continue_session(self, session_selector, tech_spec):
-        """Продолжает существующую сессию"""
+    def continue_project(self, project_selector, tech_spec):
+        """Продолжает существующий проект"""
+        if not project_selector:
+            return {"error": "Выберите проект"}, [], None
         if not tech_spec.strip():
-            return "", "Ошибка: ТЗ не может быть пустым", "", None, None, None
+            return {"error": "Введите описание доработки"}, [], None
 
-        session_id = self.extract_session_id(session_selector)
-        if not session_id:
-            return "", "Ошибка выберите сессию для продолжения", "", None, None, None
+        project_name = self._extract_project_name(project_selector)
 
         try:
-            session_id = self.orchestrator.continue_session(session_id, tech_spec)
-            status = self.orchestrator.get_session_status(session_id)
+            project_id = self.orchestrator.continue_project(project_name, tech_spec)
+            status = self.orchestrator.get_project_status(project_id)
+            files = self.orchestrator.get_project_files(project_id)
 
-            return (
-                session_id,
-                status.get("status", "unknown"),
-                f"Итерация {status.get('iteration', 0)}",
-                status.get("paln", []),
-                status.get("history", []),
-                self.get_session_files(session_id),
-            )
-
+            return status, status.get("history", []), files
         except Exception as e:
-            logger.error(f"Ошибка продолжения сессии: {e}")
+            logger.error(f"Ошибка продолжения проекта: {e}")
             logger.exception("")
-            return "", f"Ошибка: {str(e)}", "", None, None, None
+            return f"Ошибка: {str(e)}", [], None
 
-    def extract_session_id(self, session_selector_value):
-        """Извлекает session_id из значения селектора"""
+    def _extract_project_name(self, session_selector_value):
+        """Извлекает название из значения селектора"""
         if session_selector_value:
             return session_selector_value.split(" ")[0]
         return None
@@ -186,7 +179,7 @@ class AutoDevSuiteUI:
             logger.exception("")
             return "", f"Ошибка: {str(e)}", ""
 
-    def start_session(self, tech_spec):
+    def create_project(self, tech_spec):
         """Запускает новую сессию"""
         if not tech_spec.strip():
             return "", "Ошибка: ТЗ не может быть пустым", None, None, None

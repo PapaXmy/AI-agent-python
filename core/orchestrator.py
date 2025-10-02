@@ -1,12 +1,10 @@
 import logging
 import re
-import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from agents.developer_agent import DeveloperAgent
 from agents.planer_agent import PlannerAgent
-from core.file_manager import FileManager
 
 from .project_state import ProjectState
 
@@ -119,64 +117,6 @@ class Orchestrator:
         else:
             return [str(f) for f in project.project_path.rglob("*") if f.is_file()]
 
-    # def _create_new_session(self, tech_spec: str) -> str:
-    #     """Создает новую cессию"""
-    #     session_id = str(uuid.uuid4())
-    #     session_path = Path(f"./projects/{session_id}")
-    #     session_path.mkdir(parents=True, exist_ok=True)
-    #
-    #     # состояние проекта
-    #     project_state = ProjectState(session_id, session_path)
-    #     self.active_session[session_id] = project_state
-    #
-    #     project_state.start_iteration(tech_spec)
-    #
-    #     try:
-    #         # запуск планировщика
-    #
-    #         plan = self.planner.generate_plan(tech_spec)
-    #         project_state.update_plan(plan)
-    #
-    #         self._execute_plan(plan, project_state)
-    #
-    #         project_state.complete_iteration()
-    #         logger.info(f"Сессия {session_id} завершена")
-    #
-    #     except Exception as e:
-    #         project_state.status = f"Ошибка: {str(e)}"
-    #         logger.error(f"Ошибка в сессии {session_id}: {e}")
-    #         logger.exception("")
-    #
-    #     return session_id
-    #
-    # def continue_session(self, session_id: str, tech_spec: str) -> str:
-    #     """Продолжает существующую сессию с нвой итерацией"""
-    #     if session_id not in self.active_session:
-    #         raise ValueError(f"Сессия {session_id} не найдена")
-    #
-    #     project_state = self.active_session[session_id]
-    #     project_state.start_iteration(tech_spec)
-    #
-    #     try:
-    #         plan = self.planner.generate_plan(tech_spec)
-    #         project_state.update_plan(plan)
-    #
-    #         self._execute_plan(plan, project_state)
-    #
-    #         project_state.complete_iteration()
-    #         logger.info(
-    #             f"Сессия {session_id} обновлена, итерация {project_state.iteration}"
-    #         )
-    #
-    #     except Exception as e:
-    #         project_state.status = f"error_iteration_{project_state.iteration}"
-    #         logger.error(
-    #             f"Ошибка итерации {project_state.iteration} сессии {session_id}: {e}"
-    #         )
-    #         logger.exception("")
-    #
-    #     return session_id
-
     def _execute_plan(self, plan: List[Dict], project: ProjectState) -> Dict[str, str]:
         """Выполняет план задач и возвращает измененя файлов"""
         files_changes = {}
@@ -198,21 +138,6 @@ class Orchestrator:
             return {"error": "Сессия не найдена"}
 
         return self.active_projects[project_name].get_status()
-
-    # def get_active_session(self, project_state: ProjectState) -> List[Dict[str, Any]]:
-    #     """Возвращает список активных сессий"""
-    #     sessions = []
-    #     for session_id in self.active_session.items():
-    #         sessions.append(
-    #             {
-    #                 "session_id": session_id,
-    #                 "status": project_state.status,
-    #                 "iteration": project_state.iteration,
-    #                 "created_at": project_state.created_at.isoformat(),
-    #                 "updated_at": project_state.updated_at.isoformat(),
-    #             }
-    #         )
-    #     return sessions
 
     def close_session(self, project_name: str) -> bool:
         """Закрывает сессию (и убирает из активных)"""

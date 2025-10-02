@@ -38,14 +38,23 @@ class Orchestrator:
                     self.active_projects[project.project_name] = project
                     logger.info(f"Загружен проект: {project.project_name}")
 
-    def start_new_session(
-        self, tech_spec: str, session_id: Optional[str] = None
-    ) -> str:
-        """Создает новую или продорлжает существующую сессию"""
-        if session_id is not None and session_id in self.active_session:
-            return self.continue_session(session_id, tech_spec)
-        else:
-            return self._create_new_session(tech_spec)
+    def create_new_project(self, project_name: str, tech_spec: str) -> str:
+        """Создает новый проект"""
+        normalized_name = self._normalized_project_name(project_name)
+
+        if normalized_name in self.active_projects:
+            raise ValueError(f'Проект с именем "{normalized_name}" уже существует')
+
+        project = ProjectState(normalized_name, self.projects_root / normalized_name)
+        self.active_projects[normalized_name] = project
+
+        return self._execute_iteration(project, tech_spec)
+
+    def _normalized_project_name(self, name):
+        pass
+
+    def _execute_iteration(self, project: ProjectState, tech_spec: str) -> str:
+        pass
 
     def _create_new_session(self, tech_spec: str) -> str:
         """Создает новую cессию"""

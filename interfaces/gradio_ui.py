@@ -23,6 +23,7 @@ class AutoDevSuiteUI:
 
             with gr.Row():
                 with gr.Column(scale=2):
+                    # создание проектов
                     with gr.Group():
                         gr.Markdown("Создать новый проект")
                         new_project_name = gr.Textbox(
@@ -38,6 +39,7 @@ class AutoDevSuiteUI:
                         start_btn = gr.Button("Создать проект", variant="primary")
 
                 with gr.Column(scale=1):
+                    # управление существующими проектами
                     with gr.Group():
                         gr.Markdown("Проекты")
                         project_selector = gr.Dropdown(
@@ -50,18 +52,32 @@ class AutoDevSuiteUI:
                             "Доработать проект", variant="secondary"
                         )
 
+            # статус и информация
             with gr.Row():
                 with gr.Column():
-                    gr.Markdown("План разработки")
-                    plan_display = gr.JSON(label="Сгенерированный план")
+                    project_status = gr.JSON(label="Статус проекта")
 
                 with gr.Column():
-                    gr.Markdown("История изменений")
-                    history_display = gr.JSON(label="История сессии")
+                    project_history = gr.JSON(label="История итераций")
 
+            # файлы проекта
             with gr.Row():
                 gr.Markdown("Файлы проекта")
-                files_display = gr.File(label="Файлы проекта", file_count="multiple")
+
+            with gr.Row():
+                file_version = gr.Radio(
+                    choices=["Текущие файлы", "По итерациям"],
+                    label="Версия файлов",
+                    value="Текущие файлы",
+                )
+                iteration_selector = gr.Dropdown(
+                    label="Выберите итерацию",
+                    choices=[],
+                    interactive=True,
+                    visible=False,
+                )
+
+            project_files = gr.File(label="Файлы проекта", file_count="multiple")
 
             # обработчик событий
             refresh_btn.click(self.refresh_sessions, outputs=session_selector)

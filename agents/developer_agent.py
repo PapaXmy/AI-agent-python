@@ -100,10 +100,25 @@ class DeveloperAgent(BaseAgent):
             file_path,
             content,
         ) in matches:
-            full_path = project_path / file_path.strip()
-            FileManager.write_file_content(full_path, content.strip())
-            changes[file_path] = "создан" if not full_path.exists() else "изменен"
-            logger.info(f"Файл обновлен: {file_path}")
+            file_path = self._normalize_file_path(file_path.strip())
+
+            if file_path:
+                logger.warning("Пропущен пустой путь к файлу")
+                continue
+
+            full_path = project_path / file_path
+
+            if full_path.exists() and full_path.is_dir():
+                logger.warning(f"Путь {full_path} является директорией")
+                continue
+
+            try:
+                FileManager.write_file_content(full_path, content.strip())
+                changes[file_path] = "создан" if not full_path.exists() else "изменен"
+                logger.info(f"Файл обновлен: {file_path}")
+            except Exception as e:
+                logger.error(f"Ошибка применения изменений к файлу {file_path}: {e}")
+                logger.exception("")
 
         return changes
 

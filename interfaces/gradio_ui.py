@@ -112,8 +112,25 @@ class AutoDevSuiteUI:
                 outputs=project_files,
             )
 
-    def create_project(self):
-        pass
+    def create_project(self, project_name, tech_spec):
+        """Создает новый проект"""
+        if not project_name.strip():
+            return {"error": "Введите название проекта"}, [], None
+
+        if not tech_spec.strip():
+            return {"error": "Введите техническое задание"}, [], None
+
+        try:
+            project_id = self.orchestrator.create_new_project(project_name, tech_spec)
+            status = self.orchestrator.get_project_status(project_id)
+            files = self.orchestrator.get_project_files(project_id)
+
+            return status, status.get("history", []), files
+
+        except Exception as e:
+            logger.error(f"Ошибка создания проекта: {e}")
+            logger.exception("")
+            return {"error": str(e)}, [], None
 
     def load_project_info(self):
         pass
@@ -179,29 +196,29 @@ class AutoDevSuiteUI:
             logger.exception("")
             return "", f"Ошибка: {str(e)}", ""
 
-    def create_project(self, tech_spec):
-        """Запускает новую сессию"""
-        if not tech_spec.strip():
-            return "", "Ошибка: ТЗ не может быть пустым", None, None, None
-
-        try:
-            session_id = self.orchestrator.start_new_session(tech_spec)
-            status = self.orchestrator.get_session_status(session_id)
-
-            return (
-                session_id,
-                status.get("status", "unknow"),
-                f"Итерация {status.get('iteration', 0)}",
-                status.get("plan", []),
-                status.get("history", []),
-                self.get_session_files(session_id),
-            )
-
-        except Exception as e:
-            logger.error(f"Ошибка запуска сессии: {e}")
-            logger.exception("")
-            return "", f"Ошибка: {str(e)}", None, None, None
-
+    # def create_project(self, tech_spec):
+    #     """Запускает новую сессию"""
+    #     if not tech_spec.strip():
+    #         return "", "Ошибка: ТЗ не может быть пустым", None, None, None
+    #
+    #     try:
+    #         session_id = self.orchestrator.start_new_session(tech_spec)
+    #         status = self.orchestrator.get_session_status(session_id)
+    #
+    #         return (
+    #             session_id,
+    #             status.get("status", "unknow"),
+    #             f"Итерация {status.get('iteration', 0)}",
+    #             status.get("plan", []),
+    #             status.get("history", []),
+    #             self.get_session_files(session_id),
+    #         )
+    #
+    #     except Exception as e:
+    #         logger.error(f"Ошибка запуска сессии: {e}")
+    #         logger.exception("")
+    #         return "", f"Ошибка: {str(e)}", None, None, None
+    #
     def get_session_files(self, session_id):
         """Возвращает файлы файлы сессии"""
         if not session_id:

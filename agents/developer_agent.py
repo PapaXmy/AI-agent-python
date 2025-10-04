@@ -106,3 +106,11 @@ class DeveloperAgent(BaseAgent):
             logger.info(f"Файл обновлен: {file_path}")
 
         return changes
+
+    def _normalize_file_path(self, file_path: str) -> str:
+        """Нормализует путь к файлу"""
+        normalized = file_path.replace("\\", "/")
+        normalized = re.sub(r"/+", "/", normalized)
+        normalized = normalized.strip("/")
+        normalized = re.sub(r"^\.+/", "", normalized)
+        return normalized

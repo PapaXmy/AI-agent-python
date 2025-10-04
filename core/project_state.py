@@ -1,5 +1,6 @@
 import json
 import re
+import shutil
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -90,18 +91,41 @@ class ProjectState:
 
         # сохранение файлов
         for file_path, content in files_changes.items():
+            file_path = self._normalize_file_path(file_path)
             file_full_path = generated_files_path / file_path
-            file_full_path.mkdir(parents=True, exist_ok=True)
 
-            with open(file_full_path, "w", encoding="utf-8") as f:
-                f.write(content)
+            # проверка, не является ли путь директорией
+            if file_full_path.exists() and file_full_path.is_dir():
+                logger.warning(f"Путь {file_full_path} я вляется директорией, удаляем")
+                shutil.rmtree(file_full_path)
+
+            # родительские директории
+            file_full_path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                with open(file_full_path, "w", encoding="utf-8") as f:
+                    f.write(content)
+                logger.info(f"Файл сохранен в итерации: {file_path}")
+            except Exception as e:
+                logger.error(f"Ошибка сохранения файла {file_path}: {e}")
+                logger.exception("")
+                continue
 
             # обновление текущих файлов проекта
             current_file_path = self.project_path
             current_file_path.mkdir(parents=True, exist_ok=True)
 
-            with open(current_file_path, "w", encoding="utf-8") as f:
-                f.write(content)
+            if current_file_path.exists() and current_file_path.is_dir():
+                logger.warning(
+                    f"Текущий путь является {current_file_path} директорией, удаляеим"
+                )
+                shutil.rmtree(current_file_path)
+
+                try:
+                    with open(current_file_path, "w", encoding="utf-8") as f:
+                        f.write(content)
+                    logger.info(f"Файл обновлен в текущем сосотоянии: {file_path}")
+                except Exception as e:
+                    logger.error(f"Ошибка обновления текущего файла {file_path}: {e}")
 
     def _normalize_file_path(self, file_path: str) -> str:
         """Нормализует путь к файлу, убирая лишние слеши и точки"""

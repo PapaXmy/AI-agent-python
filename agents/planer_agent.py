@@ -33,8 +33,8 @@ class PlannerAgent(BaseAgent):
         llm = ChatOpenAI(
             model="gpt-4.1",
             temperature=0.1,
-            api_key=settings.api_key,
-            base_url=settings.base_url,
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_base_url,
         )
 
         response = llm.invoke(prompt.format(tech_spec=tech_spec))

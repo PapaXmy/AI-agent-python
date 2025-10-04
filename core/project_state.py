@@ -112,7 +112,7 @@ class ProjectState:
                 item["status"] = "completed"
                 item["completed_at"] = datetime.now().isoformat()
 
-    def get_corrent_files_context(self):
+    def get_current_files_context(self):
         """Возвращает контекст текущих файлов проекта"""
         context = []
         for file in self.project_path.rglob("*"):

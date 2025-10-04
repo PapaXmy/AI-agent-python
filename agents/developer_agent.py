@@ -23,8 +23,8 @@ class DeveloperAgent(BaseAgent):
         """ВЫполняет задачу разработки"""
         logger.info(f"Выполнение задачи: {task['id']} - {task['description']}")
 
-        project_context = self._get_project_context(project_state.session_path)
-        rag_context = self.get_rag_context(f'Разработка {task["description"]}')
+        project_context = project_state.get_current_files_context()
+        rag_context = self.get_rag_context(f"Разработка {task['description']}")
 
         prompt_template = """Ты - senior Python-разработчик. Выполни задачу в рамках итеративной разработки. У
         тебя есть доступ к текущим файлам проекта.
@@ -58,8 +58,8 @@ class DeveloperAgent(BaseAgent):
         llm = ChatOpenAI(
             model="gpt-4.1",
             temperature=0.1,
-            api_key=settings.api_key,
-            base_url=settings.base_url,
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_base_url,
         )
 
         response = llm.invoke(
@@ -70,7 +70,7 @@ class DeveloperAgent(BaseAgent):
             )
         )
 
-        changes = self._apply_changes(response.content, project_state.session_path)
+        changes = self._apply_changes(response.content, project_state.project_path)
 
         return {
             "status": "completed",
@@ -84,7 +84,6 @@ class DeveloperAgent(BaseAgent):
         context = []
 
         for file in project_path.rglob("*"):
-
             if file.is_file() and file.suffix in [".py", ".txt", ".md", ".json"]:
                 content = FileManager.read_file_content(file)
                 context.append(f"{file.relative_to(project_path)}: \n{content}\n")

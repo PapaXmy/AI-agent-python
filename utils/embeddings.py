@@ -29,25 +29,23 @@ def get_embeddings(use_openai: bool = False, model_name: str = "BAAI/bge-large-e
     )
 
     if use_openai:
-
-        if not settings.api_key:
+        if not settings.openai_api_key:
             error_msg = "Нет ключа OpenAI API, проверте файл .env"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
         openai_kwargs = {
             "model": "text-embedding-3-large",
-            "openai_api_key": settings.api_key,
+            "openai_api_key": settings.openai_api_key,
         }
 
-        if settings.base_url:
-            openai_kwargs["openai_api_base"] = settings.base_url
+        if settings.openai_base_url:
+            openai_kwargs["openai_api_base"] = settings.openai_base_url
             logger.debug("Использование кастомного OpenAI API URL")
 
         embeddings = OpenAIEmbeddings(**openai_kwargs)
         logger.info("OpenAI эмбеддинги инициализированы")
     else:
-
         if "bge" in model_name.lower():
             logger.info(f"Использованеи BGE эмбеддингов: {model_name}")
             embeddings = BgeEmbeddings(

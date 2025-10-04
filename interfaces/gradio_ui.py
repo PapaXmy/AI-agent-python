@@ -185,10 +185,10 @@ class AutoDevSuiteUI:
             logger.exception("")
             return f"Ошибка: {str(e)}", [], None
 
-    def _extract_project_name(self, session_selector_value):
+    def _extract_project_name(self, selector_value):
         """Извлекает название из значения селектора"""
-        if session_selector_value:
-            return session_selector_value.split(" ")[0]
+        if selector_value:
+            return selector_value.split(" ")[0]
         return None
 
     def close_session(self, session_selector):

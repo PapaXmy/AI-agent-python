@@ -1,6 +1,7 @@
 import logging
 import re
 from pathlib import Path
+import shutil
 from typing import Any, Dict, List, Optional
 
 from agents.developer_agent import DeveloperAgent
@@ -44,7 +45,13 @@ class Orchestrator:
         if normalized_name in self.active_projects:
             raise ValueError(f'Проект с именем "{normalized_name}" уже существует')
 
-        project = ProjectState(normalized_name, self.projects_root / normalized_name)
+        project_path = self.projects_root / normalized_name
+
+        if project_path.exists():
+            logger.warning(f"Директория проекта {normalized_name} уже существует")
+            shutil.rmtree(project_path)
+
+        project = ProjectState(normalized_name, project_path)
         self.active_projects[normalized_name] = project
 
         return self._execute_iteration(project, tech_spec)

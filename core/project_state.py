@@ -1,4 +1,5 @@
 import json
+import re
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -101,6 +102,15 @@ class ProjectState:
 
             with open(current_file_path, "w", encoding="utf-8") as f:
                 f.write(content)
+
+    def _normalize_file_path(self, file_path: str) -> str:
+        """Нормализует путь к файлу, убирая лишние слеши и точки"""
+        normalized = file_path.replace("\\", "/")
+        normalized = re.sub(r"/+", "/", normalized)
+        normalized = normalized.strip("/")
+        # относительные пути
+        normalized = re.sub(r"^\.+", "", normalized)
+        return normalized
 
     def complete_iteration(self):
         """Завершает итерацию"""

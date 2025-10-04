@@ -165,8 +165,16 @@ class AutoDevSuiteUI:
             files = self.orchestrator.get_project_files(project_name)
             return gr.Dropdown(visible=False, choices=[]), files
 
-    def load_iteration_files(self):
-        pass
+    def load_iteration_files(self, project_selector, iteration_selector):
+        """Загружает файлы конкретной итерации"""
+        if not project_selector or not iteration_selector:
+            return None
+
+        project_name = self._extract_project_name(project_selector)
+        iteration_num = int(iteration_selector.split(" ")[1])
+
+        files = self.orchestrator.get_project_files(project_name, iteration_num)
+        return files
 
     def refresh_sessions(self):
         """Обновление сессий"""

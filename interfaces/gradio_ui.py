@@ -132,8 +132,22 @@ class AutoDevSuiteUI:
             logger.exception("")
             return {"error": str(e)}, [], None
 
-    def load_project_info(self):
-        pass
+    def load_project_info(self, project_selector):
+        """Загружает информацию о проекте"""
+        if not project_selector:
+            return {}, [], None, gr.Dropdown(choices=[])
+
+        project_name = self._extract_project_name(project_selector)
+        status = self.orchestrator.get_project_status(project_name)
+
+        # список итераций для выбора
+        iterations = []
+        if "history" in status:
+            iterations = [f"Итерация {item['iteration']}" for item in status["history"]]
+
+        files = self.orchestrator.get_project_files(project_name)
+
+        return status, status.get("history", []), files, gr.Dropdown(choices=iterations)
 
     def toggle_file_version(self):
         pass

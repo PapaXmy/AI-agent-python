@@ -149,8 +149,21 @@ class AutoDevSuiteUI:
 
         return status, status.get("history", []), files, gr.Dropdown(choices=iterations)
 
-    def toggle_file_version(self):
-        pass
+    def toggle_file_version(self, file_version, project_selector):
+        """Пререключает между текущими файлами и файлами итерации"""
+        if not project_selector:
+            return gr.Dropdown(visible=False, choices=[]), None
+
+        project_name = self._extract_project_name(project_selector)
+        if file_version == "По итерациям":
+            status = self.orchestrator.get_project_status(project_name)
+            iterations = [
+                f"Итерация {item['iteration']}" for item in status.get("history", [])
+            ]
+            return gr.Dropdown(visible=True, choices=iterations), None
+        else:
+            files = self.orchestrator.get_project_files(project_name)
+            return gr.Dropdown(visible=False, choices=[]), files
 
     def load_iteration_files(self):
         pass

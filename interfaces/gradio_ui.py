@@ -4,7 +4,6 @@ from pathlib import Path
 import gradio as gr
 
 from core.orchestrator import Orchestrator
-from utils.logger_setup import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +86,7 @@ class AutoDevSuiteUI:
                 outputs=[project_status, project_history, project_files],
             )
             continue_btn.click(
-                self.continue_session,
+                self.continue_project,
                 inputs=[project_selector, project_history, project_files],
                 outputs=[project_status, project_history, project_files],
             )
@@ -212,59 +211,6 @@ class AutoDevSuiteUI:
             return selector_value.split(" ")[0]
         return None
 
-    def close_session(self, session_selector):
-        """Закрывает сессию"""
-        session_id = self.extract_session_id(session_selector)
-        if not session_id:
-            return "", "Ошибка выберите сессию", ""
-
-        try:
-            success = self.orchestrator.close_session(session_id)
-
-            if success:
-                return "", f"Сессия {session_id} закрыта", ""
-            else:
-                return "", f"Ошибка закрытия сессии {session_id}", ""
-
-        except Exception as e:
-            logger.error(f"Ошибка закрытия сессии {session_id}")
-            logger.exception("")
-            return "", f"Ошибка: {str(e)}", ""
-
-    # def create_project(self, tech_spec):
-    #     """Запускает новую сессию"""
-    #     if not tech_spec.strip():
-    #         return "", "Ошибка: ТЗ не может быть пустым", None, None, None
-    #
-    #     try:
-    #         session_id = self.orchestrator.start_new_session(tech_spec)
-    #         status = self.orchestrator.get_session_status(session_id)
-    #
-    #         return (
-    #             session_id,
-    #             status.get("status", "unknow"),
-    #             f"Итерация {status.get('iteration', 0)}",
-    #             status.get("plan", []),
-    #             status.get("history", []),
-    #             self.get_session_files(session_id),
-    #         )
-    #
-    #     except Exception as e:
-    #         logger.error(f"Ошибка запуска сессии: {e}")
-    #         logger.exception("")
-    #         return "", f"Ошибка: {str(e)}", None, None, None
-    #
-    def get_session_files(self, session_id):
-        """Возвращает файлы файлы сессии"""
-        if not session_id:
-            return None
-
-        session_path = Path(f"./projects/{session_id}")
-
-        if session_path.exists():
-            return [str(f) for f in session_path.rglob("*") if f.is_file()]
-        return None
-
     def run(self, server_name="0.0.0.0", server_port=7860, share=False):
         """Запуск приложения"""
         logger.info("Запуск AutoDevSuite")
@@ -274,8 +220,3 @@ class AutoDevSuiteUI:
             share=share,
             show_error=True,
         )
-
-
-# if __name__ == "__main__":
-#     app = AutoDevSuiteUI()
-#     app.run

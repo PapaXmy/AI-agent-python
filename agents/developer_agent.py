@@ -26,14 +26,17 @@ class DeveloperAgent(BaseAgent):
         project_context = project_state.get_current_files_context()
         rag_context = self.get_rag_context(f"Разработка {task['description']}")
 
-        prompt_template = """Ты - senior Python-разработчик. Выполни задачу в рамках итеративной разработки. У
-        тебя есть доступ к текущим файлам проекта.
-        
-        КОНТЕКСТ ИЗ ДОКУМЕНТАЦИИ:
+        prompt_template = """
+        Ты - senior Python-разработчик. Выполни задачу.
+
+        ВАЖНО: В путях к файлам используйте только прямые слеши (/), не используйте обратные слеши (\).
+        Убедитесь, что путь заканчивается на правильное расширение файла (.py, .txt и т.д.)
+
+        КОНТЕКСТ ДОКУМЕНТАЦИИ:
         {rag_context}
 
         ЗАДАЧА: {task_description}
-        
+
         ТЕКУЩИЕ ФАЙЛЫ ПРОЕКТА:
         {project_context}
         
@@ -43,9 +46,9 @@ class DeveloperAgent(BaseAgent):
         - сохраняй работоспособность существующего кода
 
         В своем ответе ты должен указать ТОЛЬКО код, который нужно изменить, в формате:
-        START_FILENAME: путь к файлу
+        START_FILENAME: путь/к/файлу.py
         код файла целиком
-        END_FILENAME: путь к файлу
+        END_FILENAME: путь/к/файлу.py
         
         Если файл новый, создай его. Если изменяешь существующий, предоставь
         ПОЛНЫЙ код файла с изменениями."""
@@ -100,7 +103,7 @@ class DeveloperAgent(BaseAgent):
             file_path,
             content,
         ) in matches:
-            file_path = self._normalize_file_path(file_path.strip())
+            # file_path = self._normalize_file_path(file_path.strip())
 
             if file_path:
                 logger.warning("Пропущен пустой путь к файлу")
@@ -122,10 +125,10 @@ class DeveloperAgent(BaseAgent):
 
         return changes
 
-    def _normalize_file_path(self, file_path: str) -> str:
-        """Нормализует путь к файлу"""
-        normalized = file_path.replace("\\", "/")
-        normalized = re.sub(r"/+", "/", normalized)
-        normalized = normalized.strip("/")
-        normalized = re.sub(r"^\.+/", "", normalized)
-        return normalized
+    # def _normalize_file_path(self, file_path: str) -> str:
+    #     """Нормализует путь к файлу"""
+    #     normalized = file_path.replace("\\", "/")
+    #     normalized = re.sub(r"/+", "/", normalized)
+    #     normalized = normalized.strip("/")
+    #     normalized = re.sub(r"^\.+/", "", normalized)
+    #     return normalized

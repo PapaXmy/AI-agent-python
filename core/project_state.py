@@ -111,7 +111,7 @@ class ProjectState:
                 continue
 
             # обновление текущих файлов проекта
-            current_file_path = self.project_path
+            current_file_path = self.project_path / file_path
             current_file_path.mkdir(parents=True, exist_ok=True)
 
             if current_file_path.exists() and current_file_path.is_dir():

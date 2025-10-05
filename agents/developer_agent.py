@@ -73,7 +73,7 @@ class DeveloperAgent(BaseAgent):
             )
         )
 
-        changes = self._apply_changes(response.content, project_state.project_path)
+        changes = self._apply_changes(project_state.project_path, response.content)
 
         return {
             "status": "completed",
@@ -104,7 +104,7 @@ class DeveloperAgent(BaseAgent):
         for (
             file_path,
             content,
-        ) in parsed_files:
+        ) in parsed_files.items():
             # file_path = self._normalize_file_path(file_path.strip())
 
             if not file_path or not file_path.strip():

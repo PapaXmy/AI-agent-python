@@ -93,33 +93,39 @@ class DeveloperAgent(BaseAgent):
 
         return "\n".join(context) if context else "Фалы контекста отсутствуют"
 
-    def _apply_changes(self, response: str, project_path: Path):
+    def _apply_changes(
+        self, project_path: Path, parsed_files: dict[str, str]
+    ) -> dict[str, str]:
         """Применяет изменения к файлам проекта на основе ответа LLM"""
-        pattern = r"START_FILENAME:\s*(.+?)\n(.*?)END_FILENAME:\s*\1"
-        matches = re.findall(pattern, response, re.DOTALL)
+        # pattern = r"START_FILENAME:\s*(.+?)\n(.*?)END_FILENAME:\s*\1"
+        # matches = re.findall(pattern, response, re.DOTALL)
 
         changes = {}
         for (
             file_path,
             content,
-        ) in matches:
-            file_path = self._normalize_file_path(file_path.strip())
+        ) in parsed_files:
+            # file_path = self._normalize_file_path(file_path.strip())
 
             if not file_path or not file_path.strip():
                 logger.warning("Пропущен пустой путь к файлу")
                 continue
 
             full_path = project_path / file_path
+            created = not full_path.exists()
 
-            if full_path.exists() and full_path.is_dir():
-                logger.warning(f"Путь {full_path} является директорией")
-                continue
+            full_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # if full_path.exists() and full_path.is_dir():
+            #     logger.warning(f"Путь {full_path} является директорией")
+            #     continue
 
             try:
-                full_path.parent.mkdir(parents=True, exist_ok=True)
                 FileManager.write_file_content(full_path, content.strip())
-                changes[file_path] = "создан" if not full_path.exists() else "изменен"
-                logger.info(f"Файл обновлен: {file_path}")
+                changes[file_path] = "создан" if created else "изменен"
+                logger.info(
+                    f"Файл обновлен: {file_path} {'создан' if created else 'обновлен'}"
+                )
             except Exception as e:
                 logger.error(f"Ошибка применения изменений к файлу {file_path}: {e}")
                 logger.exception("")

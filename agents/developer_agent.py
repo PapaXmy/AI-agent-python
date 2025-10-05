@@ -91,7 +91,7 @@ class DeveloperAgent(BaseAgent):
                 content = FileManager.read_file_content(file)
                 context.append(f"{file.relative_to(project_path)}: \n{content}\n")
 
-        return "/n".join(context) if context else "Фалы контекста отсутствуют"
+        return "\n".join(context) if context else "Фалы контекста отсутствуют"
 
     def _apply_changes(self, response: str, project_path: Path):
         """Применяет изменения к файлам проекта на основе ответа LLM"""
@@ -103,9 +103,9 @@ class DeveloperAgent(BaseAgent):
             file_path,
             content,
         ) in matches:
-            # file_path = self._normalize_file_path(file_path.strip())
+            file_path = self._normalize_file_path(file_path.strip())
 
-            if file_path:
+            if file_path or not file_path.strip():
                 logger.warning("Пропущен пустой путь к файлу")
                 continue
 
@@ -116,6 +116,7 @@ class DeveloperAgent(BaseAgent):
                 continue
 
             try:
+                full_path.parent.mkdir(parents=True, exist_ok=True)
                 FileManager.write_file_content(full_path, content.strip())
                 changes[file_path] = "создан" if not full_path.exists() else "изменен"
                 logger.info(f"Файл обновлен: {file_path}")
@@ -125,10 +126,10 @@ class DeveloperAgent(BaseAgent):
 
         return changes
 
-    # def _normalize_file_path(self, file_path: str) -> str:
-    #     """Нормализует путь к файлу"""
-    #     normalized = file_path.replace("\\", "/")
-    #     normalized = re.sub(r"/+", "/", normalized)
-    #     normalized = normalized.strip("/")
-    #     normalized = re.sub(r"^\.+/", "", normalized)
-    #     return normalized
+    def _normalize_file_path(self, file_path: str) -> str:
+        """Нормализует путь к файлу"""
+        normalized = file_path.replace("\\", "/")
+        normalized = re.sub(r"/+", "/", normalized)
+        normalized = normalized.strip("/")
+        normalized = re.sub(r"^\.+/", "", normalized)
+        return normalized

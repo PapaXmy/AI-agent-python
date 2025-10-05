@@ -132,6 +132,24 @@ class DeveloperAgent(BaseAgent):
 
         return changes
 
+    def _parse_response(self, response_text: str) -> dict[str, str]:
+        """Возвращает словарь нужного вида"""
+        files = {}
+        current_file = None
+        buffer = []
+
+        for line in response_text.split():
+            if line.startswith("START_FILENAME:"):
+                current_file = line.replace("START_FILENAME:", "").strip()
+                buffer = []
+            elif line.startswith("END_FILENAME:"):
+                if current_file:
+                    files[current_file] = "\n".join(buffer).strip()
+                    current_file = None
+            elif current_file:
+                buffer.append(line)
+        return files
+
     def _normalize_file_path(self, file_path: str) -> str:
         """Нормализует путь к файлу"""
         normalized = file_path.replace("\\", "/")

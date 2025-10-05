@@ -73,7 +73,8 @@ class DeveloperAgent(BaseAgent):
             )
         )
 
-        changes = self._apply_changes(project_state.project_path, response.content)
+        # parsed_files = self._parse_response(response.content)
+        changes = self._apply_changes(response.content, project_state.project_path)
 
         return {
             "status": "completed",
@@ -93,19 +94,17 @@ class DeveloperAgent(BaseAgent):
 
         return "\n".join(context) if context else "Фалы контекста отсутствуют"
 
-    def _apply_changes(
-        self, project_path: Path, parsed_files: dict[str, str]
-    ) -> dict[str, str]:
+    def _apply_changes(self, response: str, project_path: Path):
         """Применяет изменения к файлам проекта на основе ответа LLM"""
-        # pattern = r"START_FILENAME:\s*(.+?)\n(.*?)END_FILENAME:\s*\1"
-        # matches = re.findall(pattern, response, re.DOTALL)
+        pattern = r"START_FILENAME:\s*(.+?)\n(.*?)END_FILENAME:\s*\1"
+        matches = re.findall(pattern, response, re.DOTALL)
 
         changes = {}
         for (
             file_path,
             content,
-        ) in parsed_files.items():
-            # file_path = self._normalize_file_path(file_path.strip())
+        ) in matches:
+            file_path = self._normalize_file_path(file_path.strip())
 
             if not file_path or not file_path.strip():
                 logger.warning("Пропущен пустой путь к файлу")
@@ -122,7 +121,7 @@ class DeveloperAgent(BaseAgent):
 
             try:
                 FileManager.write_file_content(full_path, content.strip())
-                changes[file_path] = "создан" if created else "изменен"
+                changes[file_path] = content.strip()
                 logger.info(
                     f"Файл обновлен: {file_path} {'создан' if created else 'обновлен'}"
                 )

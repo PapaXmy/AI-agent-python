@@ -105,7 +105,7 @@ class DeveloperAgent(BaseAgent):
         ) in matches:
             file_path = self._normalize_file_path(file_path.strip())
 
-            if file_path or not file_path.strip():
+            if not file_path or not file_path.strip():
                 logger.warning("Пропущен пустой путь к файлу")
                 continue
 

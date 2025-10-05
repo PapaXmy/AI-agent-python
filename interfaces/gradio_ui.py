@@ -87,7 +87,7 @@ class AutoDevSuiteUI:
             )
             continue_btn.click(
                 self.continue_project,
-                inputs=[project_selector, project_history, project_files],
+                inputs=[project_selector, new_tech_spec],
                 outputs=[project_status, project_history, project_files],
             )
             project_selector.change(
@@ -95,7 +95,7 @@ class AutoDevSuiteUI:
                 inputs=project_selector,
                 outputs=[
                     project_status,
-                    project_status,
+                    project_history,
                     project_files,
                     iteration_selector,
                 ],
@@ -178,7 +178,7 @@ class AutoDevSuiteUI:
     def refresh_sessions(self):
         """Обновление сессий"""
         choices = self._get_project_choises()
-        return gr.Dropdown(choices=choices, value=choices[0] if choices else None)
+        return gr.update(choices=choices, value=choices[0] if choices else None)
 
     def _get_project_choises(self):
         """Возвращает список проектов для выбора"""

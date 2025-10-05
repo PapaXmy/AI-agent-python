@@ -15,7 +15,7 @@ class ProjectState:
         self.project_path = project_path
         self.hidden_dir_path = project_path / ".devsuit"
         self.iteration_path = self.hidden_dir_path / "iteration"
-        self.meta_path = self.hidden_dir_path / "poject_meta.json"
+        self.meta_path = self.hidden_dir_path / "project_meta.json"
 
         self.plan: List[Dict] = []
         self.status = "created"
@@ -40,7 +40,7 @@ class ProjectState:
             "project_name": self.project_name,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "total_iteratios": self.iteration,
+            "total_iterations": self.iteration,
             "status": self.status,
         }
 
@@ -160,8 +160,8 @@ class ProjectState:
                 ".txt",
                 ".md",
                 ".json",
-                "yaml",
-                "yml",
+                ".yaml",
+                ".yml",
             ]:
                 try:
                     content = file.read_text(encoding="utf-8")

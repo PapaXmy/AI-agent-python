@@ -29,3 +29,10 @@ class ProjectChangeHandler(FileSystemEventHandler):
             logger.info(f"Файл создан: {path}")
             self.rag_manager.update_file(path)
 
+    def on_delete(self, event):
+        """Удаляет файлы из БД"""
+        path = Path(event.src_path)
+        if not event.is_directory and path.suffix in WATCHED_EXTENSIONS:
+            logger.info(f"Файл удален {path}")
+            self.rag_manager.remove_file(path)
+

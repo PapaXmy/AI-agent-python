@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from langchain.schema import Document
@@ -177,3 +178,26 @@ class RAGManager:
         except Exception as e:
             logger.error(f"Информация о коллекции не найдена: {e}")
             return {"error": str(e)}
+
+    def update_file(self, file_path: Path):
+        """Добавляет новый файл или обновляет существующий в БД"""
+        try:
+            if not self.initialized or not self.vector_db:
+                logger.error("Векторная БД не инициализирована")
+                return False
+
+            if not file_path.exists():
+                logger.warning(f"Файл не найден: {file_path}")
+                return False
+
+            content = file_path.read_text(encoding="utf-8")
+            doc = Document(page_content=content, metadata={"source": str(file_path)})
+            self.vector_db.delete(filter={"source": str(file_path)})
+            self.vector_db.add_documents([doc])
+
+            logger.info(f"Индекс обновлен для файла: {file_path}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Ошибка обновления файла в индексе: {e}")
+            return False

@@ -1,4 +1,5 @@
 from pathlib import Path
+import threading
 import time
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
@@ -38,6 +39,7 @@ class ProjectChangeHandler(FileSystemEventHandler):
             logger.info(f"Файл удален {path}")
             self.rag_manager.remove_file(path)
 
+
 def start_project_watcher(project_name: str, project_path: Path):
     """Запускает слежение за проектом"""
     event_handler = ProjectChangeHandler(project_name, project_path)
@@ -53,3 +55,13 @@ def start_project_watcher(project_name: str, project_path: Path):
         observer.stop()
         logger.info("Слежение остановлено в ручную")
     observer.join()
+
+
+def start_watcher(project_name: str, project_path: str):
+    """Запускает в отдельном потоке чтобы не блокировать основной процесс"""
+    path = Path(project_path)
+
+    threading.Thread(
+        target=start_project_watcher, args=(project_name, path), daemon=True
+    ).start()
+

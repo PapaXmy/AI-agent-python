@@ -16,9 +16,16 @@ class ProjectChangeHandler(FileSystemEventHandler):
         self.project_path = project_path
 
     def on_modified(self, event):
-        """Отслеживает изменения файлов"""
+        """Записывает изменения файлов в БД"""
         path = Path(event.src_path)
         if not event.is_directory and path.suffix in WATCHED_EXTENSIONS:
             logger.info(f"Файл изменен {path}")
+            self.rag_manager.update_file(path)
+
+    def on_created(self, event):
+        """Записывает созданые файлы в БД"""
+        path = Path(event.src_path)
+        if not event.is_directory and path.suffix in WATCHED_EXTENSIONS:
+            logger.info(f"Файл создан: {path}")
             self.rag_manager.update_file(path)
 

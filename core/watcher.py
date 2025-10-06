@@ -1,5 +1,7 @@
 from pathlib import Path
+import time
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 from utils.rag_manager import RAGManager
 import logging
 
@@ -35,4 +37,20 @@ class ProjectChangeHandler(FileSystemEventHandler):
         if not event.is_directory and path.suffix in WATCHED_EXTENSIONS:
             logger.info(f"Файл удален {path}")
             self.rag_manager.remove_file(path)
+
+    def start_project_watcher(project_name: str, project_path: Path):
+        """Запускает слежение за проектом"""
+        event_handler = ProjectChangeHandler(project_name, project_path)
+        observer = Observer()
+        observer.schedule(event_handler, str(project_path), recursive=True)
+        observer.start()
+        logger.info(f"Слежение запущено за: {project_path}")
+
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            observer.stop()
+            logger.info("Слежение остановлено в ручную")
+        observer.join()
 

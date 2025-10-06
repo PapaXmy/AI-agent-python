@@ -200,4 +200,21 @@ class RAGManager:
 
         except Exception as e:
             logger.error(f"Ошибка обновления файла в индексе: {e}")
+            logger.exception("")
+            return False
+
+    def remove_file(self, file_path: Path):
+        """Удаляет документ из базы по пути"""
+        try:
+            if not self.initialized or not self.vector_db:
+                logger.error("Векторная БД не инициализирована")
+                return False
+
+            self.vector_db.delete(filter={"source": str(file_path)})
+            logger.info(f"Файл удален из индекса: {file_path}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Ошибка удаления файла из индекса: {e}")
+            logger.exception("")
             return False
